@@ -1,4 +1,7 @@
-#!/bin/sh
+#!/bin/bash
+
+# Set the PORT environment variable if not already set
+: ${PORT:=8000}
 
 # Wait for database to be ready
 echo "Waiting for MySQL to be ready..."
@@ -10,6 +13,8 @@ done
 echo "Applying database migrations..."
 python manage.py migrate
 
-# Start server using PORT environment variable
-echo "Starting server..."
-python manage.py runserver 0.0.0.0:${PORT:-8000}
+# Collect static files (optional, uncomment if needed)
+# python manage.py collectstatic --noinput
+
+# Start the Gunicorn server
+exec gunicorn myproject.wsgi:application --bind 0.0.0.0:$PORT 
