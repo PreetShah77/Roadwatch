@@ -1,0 +1,47 @@
+<!-- confirm_delete_employee.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Deletion</title>
+    <script>
+        function confirmDelete(event) {
+            event.preventDefault();  // Prevent form submission before confirmation
+
+            // Show confirmation dialog
+            const confirmation = confirm("Are you sure you want to delete this employee?");
+            
+            if (confirmation) {
+                // If confirmed, submit the form
+                document.getElementById('delete-form').submit();
+            } else {
+                // If canceled, do nothing
+                return false;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Are you sure you want to delete the employee?</h2>
+    <p>Employee ID: {{ employee.emp_id }}</p>
+    <p>Employee Name: {{ employee.name }}</p>
+
+    <!-- Form to delete the employee -->
+    <form id="delete-form" method="post">
+        {% csrf_token %}
+        <button type="button" onclick="confirmDelete(event)">Yes, Delete</button>
+        <a href="{% url 'employee_list' %}">
+            <button type="button">Cancel</button>
+        </a>
+    </form>
+
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</body>
+</html>

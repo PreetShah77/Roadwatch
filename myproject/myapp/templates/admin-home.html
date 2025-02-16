@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoadWatch - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --color-primary: #4338CA;
+            --color-primary-light: #6366F1;
+            --color-background: #F4F4F5;
+            --color-background-card: #FFFFFF;
+            --color-text-primary: #18181B;
+            --color-text-secondary: #52525B;
+            --color-border: #E4E4E7;
+            --color-accent: #10B981;
+            --gradient-primary: linear-gradient(135deg, #4338CA 0%, #6366F1 100%);
+            --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --border-radius: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+        }
+
+        /* Navigation Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: var(--color-background-card);
+            box-shadow: var(--shadow-subtle);
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            font-size: 1.5rem;
+        }
+
+        .logo i {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-profile {
+            position: relative;
+        }
+
+        .user-trigger {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            transition: background-color 0.2s ease;
+        }
+
+        .user-trigger:hover {
+            background-color: var(--color-background);
+        }
+
+        .user-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 110%;
+            right: 0;
+            width: 250px;
+            background-color: var(--color-background-card);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: var(--color-text-secondary);
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: var(--color-background);
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .dashboard-card {
+            background-color: var(--color-background-card);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--color-border);
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-medium);
+            border-color: var(--color-primary-light);
+        }
+
+        .dashboard-card-icon {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--gradient-primary);
+            color: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto;
+            font-size: 2.5rem;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .dashboard-card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .dashboard-card h2 {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        .dashboard-btn {
+            align-self: center;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+
+        .dashboard-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .recent-activities {
+        margin-top: 1rem;
+    }
+
+    .activity-card {
+        padding: 0.75rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">
+                <i class="fas fa-road"></i>
+                RoadWatch
+            </div>
+            <div class="user-profile">
+                <div class="user-trigger">
+                    <span>Hello, {{ user.first_name|default:"User" }}</span>
+                    <div class="user-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="{% url 'admin_profile_settings' %}">
+                        <i class="fas fa-user-cog"></i>
+                        Profile Settings
+                    </a>
+                    <a href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <section class="page-title">
+            <h1>Admin Dashboard</h1>
+        </section>
+
+        <div class="dashboard-grid">
+            <!-- Employee List Card -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="dashboard-card-content">
+                    <h2>View Employees</h2>
+                    <p>View and manage the complete list of employees in your organization.</p>
+                    <a href="{% url 'employee_list' %}" class="dashboard-btn">
+                        <i class="fas fa-eye"></i>
+                        View List
+                    </a>
+                </div>
+            </div>
+
+            <!-- Assign Task Card -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="dashboard-card-content">
+                    <h2>Assign Tasks</h2>
+                    <p>Assign and manage tasks for your employees efficiently.</p>
+                    <a href="{% url 'assign_task' %}" class="dashboard-btn">
+                        <i class="fas fa-plus"></i>
+                        Assign Tasks
+                    </a>
+                </div>
+            </div>
+
+            <!-- Add Employee Card -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="dashboard-card-content">
+                    <h2>Add Employee</h2>
+                    <p>Add new employees to your organization's database.</p>
+                    <a href="{% url 'add_employee' %}" class="dashboard-btn">
+                        <i class="fas fa-plus"></i>
+                        Add New
+                    </a>
+                </div>
+            </div>
+
+            <!-- Complaint Status Card -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="dashboard-card-content">
+                    <h2>Manage Complaints</h2>
+                    <p>Update and track the status of complaints.</p>
+                    <a href="{% url 'complaint_list'%}" class="dashboard-btn">
+                        <i class="fas fa-list-alt"></i>
+                        Update Status
+                    </a>
+                </div>
+            </div>
+
+            <!-- Generate Report Card  -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="dashboard-card-content">
+                    <h2>Generate Reports</h2>
+                    <p>Create and download detailed reports of complaints and resolutions.</p>
+                    <a href="{% url 'admin_report' %}" class="dashboard-btn">
+                        <i class="fas fa-file-download"></i>
+                        Generate Report
+                    </a>
+                </div>
+            </div>
+
+            <!-- View Map Card -->
+            <div class="dashboard-card">
+                <div class="dashboard-card-icon">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div class="dashboard-card-content">
+                    <h2>View Map</h2>
+                    <p>View real-time locations of complaints and assigned employees.</p>
+                    <a href="{% url 'admin_map' %}" class="dashboard-btn">
+                        <i class="fas fa-map"></i>
+                        Open Map
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function updateComplaintStatus(complaintId, newStatus) {
+                fetch(`/update-complaint-status/${complaintId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        status: newStatus
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateStatusUI(complaintId, newStatus);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            function updateStatusUI(complaintId, newStatus) {
+                const statusElement = document.querySelector(`#complaint-${complaintId} .status-badge`);
+                if (statusElement) {
+                    statusElement.classList.remove('status-pending', 'status-in-progress', 'status-resolved');
+                    statusElement.classList.add(`status-${newStatus.toLowerCase().replace(' ', '-')}`);
+                    statusElement.textContent = newStatus;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

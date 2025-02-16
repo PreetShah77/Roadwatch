@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee Management</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #3498db;
+        --secondary-color: #2c3e50;
+        --accent-color: #e74c3c;
+        --background-color: #f5f7fa;
+        --text-color: #333;
+        --success-color: #2ecc71;
+        --warning-color: #f1c40f;
+        --pending-color: #e67e22;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--background-color);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: var(--secondary-color);
+        font-weight: 600;
+    }
+
+    header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Dropdown container */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Trigger the dropdown on hover */
+        .user-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .user-icon-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            gap: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .user-icon-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-icon-circle i {
+            color: white;
+            font-size: 16px;
+        }
+
+        .user-dropdown:hover .user-icon-circle {
+            background-color: var(--secondary-color);
+        }
+
+        /* Arrow icon */
+        .arrow-icon {
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+            transition: transform 0.3s ease;
+        }
+
+        /* Rotate arrow when dropdown is open */
+        .user-dropdown:hover .arrow-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown content styling */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-content a {
+            color: var(--secondary-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+            text-align: left;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--background-color);
+        }
+
+
+      .main-content {
+        margin-top: 80px;
+        padding: 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .card-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+        max-width: 1400px;  /* Increased to accommodate more cards */
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .card i {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      .card h3 {
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+      }
+
+      .card p {
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .card-button {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .card-button:hover {
+        background-color: var(--secondary-color);
+      }
+
+      @media (max-width: 768px) {
+        .card-container {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-top: 1rem;
+      }
+
+      .status-pending {
+        background-color: var(--pending-color);
+        color: white;
+      }
+
+      .status-in-progress {
+        background-color: var(--warning-color);
+        color: var(--secondary-color);
+      }
+
+      .status-resolved {
+        background-color: var(--success-color);
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+        <nav>
+            <div class="logo">RoadWatch</div>
+            <div class="nav-links">
+                <a href="{% url 'admin_home' %}">Home</a>
+                <a href="{% url 'employee_list' %}">Employee list</a>
+                <a href="{% url 'assign_task' %}">Assign Task</a>
+                <a href="{% url 'add_employee' %}">Add Employee</a>
+                <a href="{% url 'complaint_list'%}">Manage Complaint</a>
+                <a href="{% url 'admin_report' %}">Report</a>
+                <a href="{% url 'admin_map' %}">Map</a>
+            </div>
+            <div class="nav-links user-dropdown">
+              <a href="#" class="user-icon-link">
+                <span class="user-name">Hello, {{ user.first_name|default:"User"}}</span>
+                <div class="user-icon-circle">
+                  <i class="fas fa-user"></i>
+                </div>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </a>
+              <div class="dropdown-content">
+                <a href="{% url 'admin_profile_settings' %}">Profile Settings</a>
+                <a href="{% url 'logout' %}">Logout</a>
+              </div>
+            </div>
+          </nav>
+        </header>
+
+        </body>
+      </html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoadWatch - Admin Dashboard</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --primary-color: #3498db;
+        --secondary-color: #2c3e50;
+        --accent-color: #e74c3c;
+        --background-color: #f5f7fa;
+        --text-color: #333;
+        --success-color: #2ecc71;
+        --warning-color: #f1c40f;
+        --pending-color: #e67e22;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--background-color);
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 2rem;
+        color: var(--secondary-color);
+        font-weight: 600;
+    }
+
+    header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .user-icon-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            gap: 0.5rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .user-icon-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-icon-circle i {
+            color: white;
+            font-size: 16px;
+        }
+
+        .user-dropdown:hover .user-icon-circle {
+            background-color: var(--secondary-color);
+        }
+
+        .arrow-icon {
+            font-size: 0.8rem;
+            color: var(--secondary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .user-dropdown:hover .arrow-icon {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            border-radius: 5px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-content a {
+            color: var(--secondary-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s ease;
+            text-align: left;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--background-color);
+        }
+
+
+      .main-content {
+        margin-top: 80px;
+        padding: 2rem;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .card-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+        max-width: 1400px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .card {
+        background-color: white;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+      }
+
+      .card i {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+      }
+
+      .card h3 {
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+      }
+
+      .card p {
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .card-button {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        background-color: var(--primary-color);
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .card-button:hover {
+        background-color: var(--secondary-color);
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-top: 1rem;
+      }
+
+      .status-pending {
+        background-color: var(--pending-color);
+        color: white;
+      }
+
+      .status-in-progress {
+        background-color: var(--warning-color);
+        color: var(--secondary-color);
+      }
+
+      .status-resolved {
+        background-color: var(--success-color);
+        color: white;
+      }
+
+      @media (max-width: 768px) {
+        .card-container {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+        <nav>
+            <div class="logo">RoadWatch</div>
+            <!-- <div class="nav-links">
+              <a href="{% url 'admin_home' %}">Home</a>
+              <a href="{% url 'employee_list' %}">Employee list</a>
+              <a href="{% url 'assign_task' %}">Assign Task</a>
+              <a href="{% url 'add_employee' %}">Add Employee</a>
+              <a href="#">Manage Complaint</a>
+              <a href="{% url 'admin_report' %}">Report</a>
+              <a href="{% url 'admin_map' %}">Map</a>
+            </div> -->
+            <div class="nav-links user-dropdown">
+              <a href="#" class="user-icon-link">
+                <span class="user-name">Hello, {{ user.first_name|default:"User"}}</span>
+                <div class="user-icon-circle">
+                  <i class="fas fa-user"></i>
+                </div>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+              </a>
+              <div class="dropdown-content">
+                <a href="{% url 'admin_profile_settings' %}">Profile Settings</a>
+                <a href="{% url 'logout' %}">Logout</a>
+              </div>
+            </div>
+          </nav>
+        </header>
+
+        
+
+          <div class="main-content">
+          <div class="card-container">
+            {% if user.is_admin %}  <!-- Check if user is admin -->
+            
+              <!-- Admin View Cards -->
+              <div class="card">
+                <i class="fas fa-users"></i>
+                <h3>View Employees</h3>
+                <p>View and manage the complete list of employees in your organization.</p>
+                <a href="{% url 'employee_list' %}" class="card-button">View List</a>
+              </div>
+    
+              <div class="card">
+                <i class="fas fa-tasks"></i>
+                <h3>Assign Tasks</h3>
+                <p>Assign and manage tasks for your employees efficiently.</p>
+                <a href="{% url 'assign_task' %}" class="card-button">Assign Tasks</a>
+              </div>
+    
+              <div class="card">
+                <i class="fas fa-user-plus"></i>
+                <h3>Add Employee</h3>
+                <p>Add new employees to your organization's database.</p>
+                <a href="{% url 'add_employee' %}" class="card-button">Add New</a>
+              </div>
+    
+              <div class="card">
+                <i class="fas fa-clipboard-check"></i>
+                <h3>Manage Complaints</h3>
+                <p>Update and track the status of complaints.</p>
+                <a href="{% url 'complaint_list'%}" class="card-button">Update Status</a>
+              </div>
+    
+              <div class="card">
+                <i class="fas fa-file-alt"></i>
+                <h3>Generate Reports</h3>
+                <p>Create and download detailed reports of complaints and resolutions.</p>
+                <a href="{% url 'admin_report' %}" class="card-button">Generate Report</a>
+              </div>
+    
+              <div class="card">
+                <i class="fas fa-map-marked-alt"></i>
+                <h3>View Map</h3>
+                <p>View real-time locations of complaints and assigned employees.</p>
+                <a href="{% url 'admin_map' %}" class="card-button">Open Map</a>
+              </div>
+    
+            {% else %}
+              <!-- Employee View Cards -->
+              <div class="card">
+                <i class="fas fa-tasks"></i>
+                <h3>View Assigned Tasks</h3>
+                <p>View and track your assigned tasks.</p>
+                <a href="#" class="card-button">View Tasks</a>
+              </div>
+    
+              <div class="card">
+                <i class="fas fa-clipboard-check"></i>
+                <h3>Manage Complaints</h3>
+                <p>Update and track the status of your complaints.</p>
+                <a href="#" class="card-button">Manage Complaints</a>
+              </div>
+    
+            {% endif %}
+          </div>
+        </div>
+      </body>
+      
+          <script>
+            document.addEventListener('DOMContentLoaded', function() {
+              function updateComplaintStatus(complaintId, newStatus) {
+                fetch(`/update-complaint-status/${complaintId}`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                  },
+                  body: JSON.stringify({
+                    status: newStatus
+                  })
+                })
+                .then(response => response.json())
+                .then(data => {
+                  if (data.success) {
+                    updateStatusUI(complaintId, newStatus);
+                  }
+                })
+                .catch(error => console.error('Error:', error));
+              }
+      
+              function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                  const cookies = document.cookie.split(';');
+                  for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                    }
+                  }
+                }
+                return cookieValue;
+              }
+      
+              function updateStatusUI(complaintId, newStatus) {
+                const statusElement = document.querySelector(`#complaint-${complaintId} .status-badge`);
+                if (statusElement) {
+                  statusElement.classList.remove('status-pending', 'status-in-progress', 'status-resolved');
+                  statusElement.classList.add(`status-${newStatus.toLowerCase().replace(' ', '-')}`);
+                  statusElement.textContent = newStatus;
+                }
+              }
+            });
+          </script>
+        </body>
+      </html>

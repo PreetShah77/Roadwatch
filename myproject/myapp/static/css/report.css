@@ -1,0 +1,90 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #1d3557;
+    color: #fff;
+    padding: 15px 0;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header .nav-links {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+header .nav-links a {
+    color: white;
+    margin: 0 20px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.3s;
+}
+
+header .nav-links a:hover {
+    color: #e63946;
+}
+
+.report-container {
+    margin: 40px auto;
+    max-width: 800px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.report-container h2 {
+    color: #1d3557;
+    text-align: center;
+}
+
+.report-content {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.case-statistics, .priority-statistics {
+    margin: 20px 0;
+}
+
+.case-statistics p, .priority-statistics p {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.priority-statistics h4 {
+    color: #1d3557;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+button.download-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background-color: #457b9d;
+    color: white;
+    font-size: 1.2rem;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+button.download-btn:hover {
+    background-color: #1d3557;
+}

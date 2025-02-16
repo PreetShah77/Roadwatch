@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Info Window Example</title>
+  <style>
+    /* Style for the info window */
+    .info-window {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      z-index: 1000;
+    }
+
+    .info-window h2 {
+      margin-bottom: 10px;
+    }
+
+    .info-window p {
+      margin-bottom: 20px;
+    }
+
+    .info-window button {
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .info-window button:hover {
+      background-color: #2980b9;
+    }
+
+    /* Backdrop overlay */
+    .backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <button id="openInfoButton">Open Info Window</button>
+
+  <!-- Backdrop -->
+  <div id="backdrop" class="backdrop"></div>
+
+  <!-- Info Window -->
+  <div id="infoWindow" class="info-window">
+    <h2>Info Window</h2>
+    <p>This is some information displayed in an info window.</p>
+    <button id="closeInfoButton">Close</button>
+  </div>
+
+  <script>
+    // Get elements
+    const openInfoButton = document.getElementById('openInfoButton');
+    const closeInfoButton = document.getElementById('closeInfoButton');
+    const infoWindow = document.getElementById('infoWindow');
+    const backdrop = document.getElementById('backdrop');
+
+    // Open info window
+    openInfoButton.addEventListener('click', () => {
+      infoWindow.style.display = 'block';
+      backdrop.style.display = 'block';
+    });
+
+    // Close info window
+    closeInfoButton.addEventListener('click', () => {
+      infoWindow.style.display = 'none';
+      backdrop.style.display = 'none';
+    });
+
+    // Close info window by clicking the backdrop
+    backdrop.addEventListener('click', () => {
+      infoWindow.style.display = 'none';
+      backdrop.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

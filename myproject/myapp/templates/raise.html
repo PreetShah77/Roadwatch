@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report Road Issue - RoadWatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+ :root {
+    --primary-color: #4F46E5;
+    --primary-hover: #4338CA;
+    --secondary-color: #1F2937;
+    --accent-color: #EF4444;
+    --background-color: #F9FAFB;
+    --text-color: #374151;
+    --success-color: #10B981;
+    --warning-color: #FBBF24;
+    --pending-color: #F97316;
+    --card-bg: white;
+    --input-bg: #F3F4F6;
+    --input-border: #E5E7EB;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --header-height: 64px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    min-height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f6f8fb 0%, #e9eef5 100%);
+}
+
+/* Header Styles */
+header {
+    background-color: white;
+    box-shadow: var(--shadow-sm);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    height: var(--header-height);
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    max-width: 1280px;
+    margin: 0 auto;
+    height: 100%;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+
+.logo i {
+    font-size: 1.25rem;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color 0.2s ease;
+    padding: 0.5rem 0;
+    position: relative;
+}
+
+.nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width 0.2s ease;
+}
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+/* User Dropdown Styles */
+.user-dropdown {
+    position: relative;
+}
+
+.user-icon-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--input-bg);
+    border-radius: 9999px;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+}
+
+.user-icon-link:hover {
+    background-color: var(--input-border);
+}
+
+.user-name {
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+.user-icon-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-icon-circle i {
+    color: white;
+}
+
+.dropdown-content {
+    position: absolute;
+    right: 0;
+    top: 120%;
+    background-color: white;
+    min-width: 200px;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+}
+
+.user-dropdown:hover .dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-content a {
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--input-bg);
+}
+
+/* Main Content Styles */
+.main-content {
+    height: calc(100vh - var(--header-height));
+    margin-top: var(--header-height);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1440px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    height: calc(100vh - var(--header-height) - 3rem);
+    align-items: stretch;
+}
+
+.left-side, .right-side {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+
+.left-side:hover, .right-side:hover {
+    transform: translateY(-5px);
+}
+
+/* Section Title Styles */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--input-border);
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-title i {
+    color: var(--primary-color);
+}
+
+/* Form Styles */
+.form-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.form-group {
+    margin-bottom: 0;
+    transition: transform 0.3s ease;
+}
+
+.form-group:hover {
+    transform: translateX(5px);
+}
+
+label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.925rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: var(--secondary-color);
+}
+
+label i {
+    color: var(--primary-color);
+}
+
+input[type="text"],
+input[type="file"],
+select,
+textarea {
+    width: 100%;
+    padding: 1rem;
+    font-size: 0.95rem;
+    border-radius: 0.75rem;
+    background-color: var(--input-bg);
+    border: 2px solid var(--input-border);
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+input[type="file"] {
+    padding: 0.75rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: white;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.5rem;
+    padding-right: 2.5rem;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* Camera Controls */
+.camera-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.image-preview {
+    width: 100%;
+    height: 200px;
+    border-radius: 1rem;
+    border: 3px dashed var(--input-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: var(--input-bg);
+    transition: all 0.3s ease;
+}
+
+.image-preview:hover {
+    border-color: var(--primary-color);
+    background-color: white;
+}
+
+.image-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Map Styles */
+.map-container {
+    flex: 1;
+    min-height: 300px;
+    margin: 1rem 0;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    border-radius: 0.75rem;
+    border: 2px solid var(--input-border);
+    transition: all 0.3s ease;
+}
+
+#map:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+/* Location Details */
+.location-details {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+/* Button Styles */
+.secondary-button {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.secondary-button:hover {
+    background-color: var(--text-color);
+    transform: translateY(-2px);
+}
+
+.submit-button {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: auto;
+}
+
+.submit-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.submit-button:active {
+    transform: translateY(0);
+}
+
+/* Alert Styles */
+.alert {
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.alert-success {
+    background-color: #ECFDF5;
+    color: #065F46;
+    border: 2px solid #A7F3D0;
+}
+
+.alert-error {
+    background-color: #FEF2F2;
+    color: #991B1B;
+    border: 2px solid #FECACA;
+}
+
+/* Scrollbar Styling */
+.left-side::-webkit-scrollbar,
+.right-side::-webkit-scrollbar {
+    width: 6px;
+}
+
+.left-side::-webkit-scrollbar-track,
+.right-side::-webkit-scrollbar-track {
+    background: var(--input-bg);
+    border-radius: 3px;
+}
+
+.left-side::-webkit-scrollbar-thumb,
+.right-side::-webkit-scrollbar-thumb {
+    background: var(--input-border);
+    border-radius: 3px;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .container {
+        grid-template-columns: 1fr;
+        height: auto;
+        gap: 1rem;
+    }
+
+    .left-side, .right-side {
+        height: auto;
+        max-height: calc((100vh - var(--header-height) - 3rem) / 2);
+    }
+
+    .main-content {
+        padding: 1rem;
+        height: auto;
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+
+    .user-name {
+        display: none;
+    }
+
+    .camera-controls {
+        flex-direction: column;
+    }
+
+    .camera-controls input,
+    .camera-controls button {
+        width: 100%;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+    }
+
+    .left-side, .right-side {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 0.5rem;
+    }
+
+    .container {
+        gap: 0.5rem;
+    }
+
+    .left-side, .right-side {
+        padding: 1rem;
+        border-radius: 1rem;
+    }
+
+    .image-preview {
+        height: 150px;
+    }
+
+    #map {
+        height: 250px;
+    }
+}
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-road"></i>
+                RoadWatch
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'user_home' %}">Home</a>
+                <a href="{% url 'view_complaint' %}">View Complaint</a>
+                <a href="{% url 'view_map' %}">Map</a>
+            </div>
+            <div class="user-dropdown">
+                <div class="user-icon-link">
+                    <span class="user-name">Hello, {{ user.first_name|default:"User"}}</span>
+                    <div class="user-icon-circle">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+                <div class="dropdown-content">
+                    <a href="{% url 'profile_settings' %}">
+                        <i class="fas fa-user-cog"></i>
+                        Profile Settings
+                    </a>
+                    <a href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="main-content">
+        <div class="container">
+            <div class="left-side">
+                <h2 class="section-title">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Report Road Issue
+                </h2>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            <i class="fas fa-info-circle"></i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+    
+                <form id="report-form" method="post" enctype="multipart/form-data" action="{% url 'raise_complaint' %}">
+                    {% csrf_token %}
+                    <div class="form-content">
+                        <div class="form-group">
+                            <label for="image-capture">
+                                <i class="fas fa-camera"></i>
+                                Capture Image
+                            </label>
+                            <div class="camera-controls">
+                                <input 
+                                    name="image"
+                                    type="file" 
+                                    id="image-capture" 
+                                    accept="image/*" 
+                                    capture="environment"
+                                    required
+                                />
+                                <button type="button" id="camera-button" class="secondary-button">
+                                    <i class="fas fa-camera"></i> Open Camera
+                                </button>
+                            </div>
+                            <div id="image-preview" class="image-preview"></div>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="issue-type">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Type of Issue
+                            </label>
+                            <select name="issue_type" id="issue-type" required>
+                                <option value="">Select an issue</option>
+                                <option value="pothole">Pothole</option>
+                                <option value="crack">Crack</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="severity">
+                                <i class="fas fa-exclamation"></i>
+                                Severity
+                            </label>
+                            <select name="severity" id="severity" required>
+                                <option value="">Select severity</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+    
+                        <div class="form-group">
+                            <label for="description">
+                                <i class="fas fa-comment-alt"></i>
+                                Description
+                            </label>
+                            <textarea 
+                                name="description" 
+                                id="description" 
+                                rows="3" 
+                                placeholder="Please describe the issue..."
+                                required></textarea>
+                        </div>
+                    </div>
+            </div>
+    
+            <div class="right-side">
+                <h2 class="section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Location Details
+                </h2>
+                
+                <div class="location-details">
+                    <div class="location-info">
+                        <p class="location-address">Fetching location...</p>
+                        <p class="location-coordinates"></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="coordinates">
+                            <i class="fas fa-crosshairs"></i>
+                            Coordinates
+                        </label>
+                        <input 
+                            name="coordinates" 
+                            type="text" 
+                            id="coordinates" 
+                            readonly 
+                            required 
+                        />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location">
+                            <i class="fas fa-map-pin"></i>
+                            Location Name
+                        </label>
+                        <input 
+                            name="location" 
+                            type="text" 
+                            id="location"
+                            readonly
+                            required
+                        />
+                    </div>
+                </div>
+    
+                <div class="map-container">
+                    <div id="map"></div>
+                </div>
+    
+                <button type="submit" class="submit-button">
+                    <i class="fas fa-paper-plane"></i>
+                    Submit Report
+                </button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+
+    <!-- Add Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        let map = null;
+        let marker = null;
+        document.addEventListener('DOMContentLoaded', function() {
+    // Call getLocation when page loads
+    getLocation();
+
+    // Add error handling timeout
+    setTimeout(() => {
+        const locationAddress = document.querySelector('.location-address');
+        if (locationAddress.textContent === 'Fetching location...') {
+            locationAddress.textContent = 'Unable to fetch location. Please check your location permissions.';
+        }
+    }, 10000); // 10 second timeout
+
+    const imageCapture = document.getElementById('image-capture');
+    const imagePreview = document.getElementById('image-preview');
+    const cameraButton = document.getElementById('camera-button');
+    let stream = null;
+
+    // Function to stop camera stream
+    function stopCameraStream() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+    }
+
+    // Image upload preview
+    imageCapture.addEventListener('change', function(e) {
+        // Stop any existing camera stream
+        stopCameraStream();
+
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.innerHTML = `
+                    <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                `;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Camera handling
+    cameraButton.addEventListener('click', async function() {
+        try {
+            // Stop any existing stream before starting a new one
+            stopCameraStream();
+
+            // Create a video element for camera stream
+            let videoElement = document.createElement('video');
+            videoElement.style.width = '100%';
+            videoElement.style.height = '100%';
+            videoElement.style.objectFit = 'cover';
+
+            // Get camera stream
+            stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    facingMode: 'environment',
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
+                } 
+            });
+
+            videoElement.srcObject = stream;
+            imagePreview.innerHTML = ''; // Clear previous content
+            imagePreview.appendChild(videoElement);
+            
+            // Add capture button
+            const captureButton = document.createElement('button');
+            captureButton.innerHTML = '<i class="fas fa-camera"></i> Capture';
+            captureButton.className = 'capture-button';
+            captureButton.style.position = 'absolute';
+            captureButton.style.bottom = '10px';
+            captureButton.style.left = '50%';
+            captureButton.style.transform = 'translateX(-50%)';
+            captureButton.style.zIndex = '10';
+            captureButton.style.padding = '8px 16px';
+            captureButton.style.backgroundColor = 'var(--primary-color)';
+            captureButton.style.color = 'white';
+            captureButton.style.border = 'none';
+            captureButton.style.borderRadius = '8px';
+            captureButton.style.cursor = 'pointer';
+
+            // Add close button
+            const closeButton = document.createElement('button');
+            closeButton.innerHTML = '<i class="fas fa-times"></i>';
+            closeButton.className = 'close-button';
+            closeButton.style.position = 'absolute';
+            closeButton.style.top = '10px';
+            closeButton.style.right = '10px';
+            closeButton.style.zIndex = '10';
+            closeButton.style.padding = '8px';
+            closeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            closeButton.style.color = 'white';
+            closeButton.style.border = 'none';
+            closeButton.style.borderRadius = '50%';
+            closeButton.style.cursor = 'pointer';
+            
+            imagePreview.style.position = 'relative';
+            imagePreview.appendChild(captureButton);
+            imagePreview.appendChild(closeButton);
+
+            // Start playing the video
+            await videoElement.play();
+
+            // Close button click handler
+            closeButton.addEventListener('click', () => {
+                stopCameraStream();
+                imagePreview.innerHTML = ''; // Clear preview
+            });
+
+            // Capture button click handler
+            captureButton.addEventListener('click', () => {
+                // Create canvas to capture frame
+                const canvas = document.createElement('canvas');
+                canvas.width = videoElement.videoWidth;
+                canvas.height = videoElement.videoHeight;
+                const ctx = canvas.getContext('2d');
+                
+                // Draw video frame to canvas
+                ctx.drawImage(videoElement, 0, 0);
+                
+                // Convert to file
+                canvas.toBlob((blob) => {
+                    const file = new File([blob], "captured-image.jpg", { type: "image/jpeg" });
+                    
+                    // Create FileList-like object
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    imageCapture.files = dataTransfer.files;
+                    
+                    // Stop camera stream and show preview
+                    stopCameraStream();
+                    imagePreview.innerHTML = `
+                        <img src="${canvas.toDataURL('image/jpeg')}" alt="Captured" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    `;
+                }, 'image/jpeg', 0.8);
+            });
+
+        } catch (err) {
+            console.error("Error accessing camera:", err);
+            alert("Unable to access camera. Please check permissions or try uploading an image instead.");
+        }
+    });
+
+    // Clean up on page unload
+    window.addEventListener('beforeunload', stopCameraStream);
+});
+
+        // Location handling
+// Update the getLocation function error handling
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            position => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                document.getElementById('coordinates').value = `${lat},${lng}`;
+                
+                // Initialize map
+                initMap(lat, lng);
+                
+                // Use OpenStreetMap Nominatim for reverse geocoding
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        const address = data.display_name;
+                        document.getElementById('location').value = address;
+                        
+                        // Safely update location display
+                        const addressElement = document.querySelector('.location-address');
+                        const coordsElement = document.querySelector('.location-coordinates');
+                        
+                        if (addressElement) {
+                            addressElement.textContent = address;
+                        }
+                        if (coordsElement) {
+                            coordsElement.textContent = `Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error getting address:", error);
+                        const addressElement = document.querySelector('.location-address');
+                        const coordsElement = document.querySelector('.location-coordinates');
+                        
+                        if (addressElement) {
+                            addressElement.textContent = `Location found (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+                        }
+                        if (coordsElement) {
+                            coordsElement.textContent = `Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                        }
+                    });
+            },
+            error => {
+                console.error("Error getting location:", error);
+                const addressElement = document.querySelector('.location-address');
+                if (addressElement) {
+                    addressElement.textContent = "Error getting location. Please try again.";
+                }
+                // Initialize map with a default location
+                initMap(0, 0);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+        );
+    } else {
+        const addressElement = document.querySelector('.location-address');
+        if (addressElement) {
+            addressElement.textContent = 'Geolocation is not supported by your browser';
+        }
+    }
+}
+
+        function initMap(lat, lng) {
+            if (!map) {
+                map = L.map('map').setView([lat, lng], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+            } else {
+                map.setView([lat, lng], 15);
+            }
+
+            if (marker) {
+                marker.setLatLng([lat, lng]);
+            } else {
+                marker = L.marker([lat, lng]).addTo(map);
+            }
+        }
+    </script>
+</body>
+</html>

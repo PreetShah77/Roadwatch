@@ -1,0 +1,239 @@
+/* Modern Dashboard CSS */
+
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --background-color: #ecf0f1;
+    --text-color: #34495e;
+    --sidebar-width: 250px;
+    --header-height: 60px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.container {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr var(--sidebar-width);
+    height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.menu ul {
+    list-style-type: none;
+}
+
+.menu li {
+    padding: 12px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.menu li:hover,
+.menu li.active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.menu i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+/* Header Styles */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+/* Main Content Styles */
+.main-content {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+}
+
+#searchInput {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    font-size: 1em;
+}
+
+#searchButton {
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+}
+
+/* Analytics Section */
+.analytics {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.chart-container {
+    width: 48%;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-top: 1.5rem;
+}
+
+/* Metrics Overview Styles */
+.metrics-overview {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.metric-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+}
+
+.metric-card h3 {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.metric-card p {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.case-list {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#caseTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#caseTable th,
+#caseTable td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+#caseTable th {
+    background-color: #f2f2f2;
+}
+
+#loadMoreCases {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Right Sidebar Styles */
+.right-sidebar {
+    background-color: white;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#timeRangeSelect {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.metrics-overview,
+.case-summary {
+    margin-bottom: 20px;
+}
+
+.case-stat,
+.priority-stat {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.case-stat {
+    margin-top: 1rem;
+}
+
+.priority-label {
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    margin-top: 0.5rem;
+}
+
+#pri {
+    margin-top: 1rem;
+}
+
+.high {
+    background-color: #e74c3c;
+}
+
+.medium {
+    background-color: #f39c12;
+}
+
+.low {
+    background-color: #3498db;
+}

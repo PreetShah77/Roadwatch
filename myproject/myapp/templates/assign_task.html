@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Settings</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+       :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --secondary-color: #1F2937;
+            --accent-color: #EF4444;
+            --background-color: #F9FAFB;
+            --text-color: #374151;
+            --success-color: #10B981;
+            --warning-color: #FBBF24;
+            --pending-color: #F97316;
+            --card-bg: white;
+            --input-bg: #F3F4F6;
+            --input-border: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+        }
+
+        header {
+            background-color: white;
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width 0.2s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .user-dropdown {
+            position: relative;
+        }
+
+        .user-icon-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--input-bg);
+            border-radius: 9999px;
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+        }
+
+        .user-icon-link:hover {
+            background-color: var(--input-border);
+        }
+
+        .user-name {
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .user-icon-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-icon-circle i {
+            color: white;
+        }
+
+        .dropdown-content {
+            position: absolute;
+            right: 0;
+            top: 120%;
+            background-color: white;
+            min-width: 200px;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+
+        .user-dropdown:hover .dropdown-content {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-content a {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color 0.2s ease;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--input-bg);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-top: 80px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 2rem;
+        }
+
+        .main-content h2 {
+            color: var(--secondary-color);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        /* Form Styles */
+        form {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .filters {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        select {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: "Poppins", sans-serif;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .action-btn {
+            background-color: var(--pending-color);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            font-family: "Poppins", sans-serif;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            background-color: #91312c;
+        }
+        #description{
+            padding : 2rem;
+        }
+        input#complaint_id {
+            padding: 0.43rem;
+            font-size: large;
+            margin-bottom: 3%;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            form {
+                padding: 1.5rem;
+            }
+        }
+        .message-success {
+            color: var(--success-color); /* Green */
+        }
+
+        .message-error {
+            color: var(--accent-color); /* Red */
+        }
+        .back-to-profile {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: block;
+            margin-top: 1rem;
+            text-align: center;
+        }   
+
+    </style>
+  </head>
+  <body>
+    <header>
+        <nav>
+          <div class="logo">RoadWatch</div>
+          <div class="nav-links">
+            <a href="{% url 'admin_home' %}">Home</a>
+            <a href="{% url 'add_employee' %}">Add Employee</a>
+            <a href="{% url 'complaint_list'%}">Manage Complaint</a>
+            <a href="{% url 'admin_report' %}">Report</a>
+            <a href="{% url 'admin_map' %}">Map</a>
+          </div>
+          <div class="user-dropdown">
+            <div class="user-icon-link">
+              <span class="user-name">Hello, {{ user.first_name|default:"User" }}</span>
+              <div class="user-icon-circle">
+                <i class="fas fa-user"></i>
+              </div>
+            </div>
+            <div class="dropdown-content">
+              <a href="{% url 'admin_profile_settings' %}">
+                <i class="fas fa-user-cog"></i>
+                Profile Settings
+              </a>
+              <a href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </a>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+    <div class="main-content">
+        
+<!-- assign_task.html -->
+<form method="POST">
+    {% csrf_token %}
+    <h1>Assign Task</h1>
+        {% if messages %}
+        <div id="message-container" style="margin-bottom: 10px;">
+            {% for message in messages %}
+                <p class="{% if message.tags == 'success' %}message-success{% else %}message-error{% endif %}">
+                    {{ message }}
+                </p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    <label for="employee">Employee:</label>
+    <select name="employee" id="employee">
+        <option value="" disabled selected>Select Employee Name</option>
+        {% for employee in employees %}
+            <option value="{{ employee.id }}">{{ employee.first_name|capfirst }} {{ employee.last_name|capfirst }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="task_type">Task Type:</label>
+    <select name="task_type" id="task_type">
+        <option value="" disabled selected>Select Task to Assign</option>
+        {% for task in tasks %}
+            <option value="{{ task.0 }}">{{ task.1 }}</option>
+        {% endfor %}
+    </select>
+
+    <div class="filter-group">
+        <label for="description">Description:</label>
+        <textarea name="description" id="description"></textarea>
+    </div>
+
+    <div class="filter-group">
+        <label for="complaint_id">Complaint (Optional):</label>
+        <input type="text" name="complaint_id" id="complaint_id">
+    </div>
+
+    <div class="filter-group">
+        <button type="submit" class="action-btn">Assign</button>
+        <a href="{% url 'employee_list' %}" id="back-to-profile" class="back-to-profile">View Employee List</a>
+    </div>
+</form>
+
+</div>
+</body>
+</html>
+

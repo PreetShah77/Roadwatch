@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Form UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --primary-hover: #4338CA;
+            --secondary-color: #1F2937;
+            --accent-color: #EF4444;
+            --background-color: #F9FAFB;
+            --text-color: #374151;
+            --success-color: #10B981;
+            --warning-color: #FBBF24;
+            --card-bg: white;
+            --input-bg: #F3F4F6;
+            --input-border: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        header {
+            background-color: white;
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 1.25rem;
+        }
+
+        .login-container {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            color: var(--secondary-color);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .error-message {
+            background-color: #FEF2F2;
+            color: #991B1B;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #FECACA;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            padding-right: 2.5rem;
+            font-size: 0.95rem;
+            border-radius: 0.5rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .eye-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: color 0.2s ease;
+            z-index: 10;
+            margin-top: -2%;
+        }
+
+        .eye-icon:hover {
+            color: var(--primary-color);
+        }
+
+        .login-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.875rem;
+            width: 100%;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .login-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .text-links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .text-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .text-links a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+
+        .password-input-container {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="{% url 'home' %}" class="logo">
+        <i class="fas fa-road"></i>
+        RoadWatch
+      </a>
+    </nav>
+  </header>
+
+  <div class="login-container">
+      <h2>Welcome Back</h2>
+      
+      {% if error_message %}
+      <div class="error-message">
+          {{ error_message }}
+      </div>
+      {% endif %}
+      
+      <form id="loginForm" method="post" action="{% url 'login' %}">
+          {% csrf_token %}
+          <label for="email">Email</label>
+          <input
+            type="text"
+            id="email"
+            name="email"
+            placeholder="Enter your email"
+            value="{{ email_value }}" 
+            required
+          />
+
+          <label for="password">Password</label>
+          <div class="password-input-container">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              required
+            />
+            <i id="togglePassword" class="fas fa-eye-slash eye-icon"></i>
+          </div>
+          
+          <button type="submit" class="login-btn">Login</button>
+      </form>
+
+      <div class="text-links">
+          <p>Don't have an account? <a href="{% url 'signup' %}">Register</a></p>
+      </div>
+  </div>
+
+  <script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordField = document.getElementById('password');
+
+    togglePassword.addEventListener('click', function() {
+        const type = passwordField.type === 'password' ? 'text' : 'password';
+        passwordField.type = type;
+
+        this.classList.toggle('fa-eye-slash');
+        this.classList.toggle('fa-eye');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RoadWatch - Map View</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+          --primary-color: #4F46E5;
+          --primary-hover: #4338CA;
+          --secondary-color: #1F2937;
+          --accent-color: #EF4444;
+          --background-color: #F9FAFB;
+          --text-color: #374151;
+          --success-color: #10B981;
+          --card-bg: white;
+          --input-bg: #F3F4F6;
+          --input-border: #E5E7EB;
+          --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+          --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+          --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      }
+
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: 'Inter', sans-serif;
+          line-height: 1.6;
+          color: var(--text-color);
+          background-color: var(--background-color);
+      }
+
+      header {
+          background-color: white;
+          box-shadow: var(--shadow-sm);
+          position: fixed;
+          width: 100%;
+          top: 0;
+          z-index: 1000;
+      }
+
+      nav {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0.75rem 1.5rem;
+          max-width: 1280px;
+          margin: 0 auto;
+      }
+
+      .logo {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: var(--primary-color);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+      }
+
+      .logo i {
+          font-size: 1.25rem;
+      }
+
+      .nav-links {
+          display: flex;
+          gap: 2rem;
+      }
+
+      .nav-links a {
+          color: var(--secondary-color);
+          text-decoration: none;
+          font-weight: 500;
+          font-size: 0.95rem;
+          transition: color 0.2s ease;
+          padding: 0.5rem 0;
+          position: relative;
+      }
+
+      .nav-links a::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background-color: var(--primary-color);
+          transition: width 0.2s ease;
+      }
+
+      .nav-links a:hover::after {
+          width: 100%;
+      }
+
+      .user-dropdown {
+          position: relative;
+      }
+
+      .user-icon-link {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.5rem 1rem;
+          background-color: var(--input-bg);
+          border-radius: 9999px;
+          transition: background-color 0.2s ease;
+      }
+
+      .user-icon-link:hover {
+          background-color: var(--input-border);
+      }
+
+      .user-name {
+          font-weight: 500;
+          color: var(--secondary-color);
+      }
+
+      .user-icon-circle {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background-color: var(--primary-color);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+
+      .user-icon-circle i {
+          color: white;
+          font-size: 1rem;
+      }
+
+      .dropdown-content {
+          position: absolute;
+          right: 0;
+          top: 120%;
+          background-color: white;
+          min-width: 200px;
+          border-radius: 0.5rem;
+          box-shadow: var(--shadow-lg);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-10px);
+          transition: all 0.2s ease;
+      }
+
+      .user-dropdown:hover .dropdown-content {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+      }
+
+      .dropdown-content a {
+          padding: 0.75rem 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          color: var(--text-color);
+          text-decoration: none;
+          transition: background-color 0.2s ease;
+      }
+
+      .dropdown-content a:hover {
+          background-color: var(--input-bg);
+      }
+
+      .container {
+          display: flex;
+          height: calc(100vh - 64px);
+          margin-top: 64px;
+      }
+
+      .sidebar {
+          width: 320px;
+          background-color: var(--card-bg);
+          padding: 1.5rem;
+          box-shadow: var(--shadow);
+          overflow-y: auto;
+      }
+
+      .sidebar h2 {
+          color: var(--secondary-color);
+          margin-bottom: 1.5rem;
+          font-size: 1.25rem;
+          font-weight: 600;
+      }
+
+      .filter-group {
+          background-color: var(--card-bg);
+          border-radius: 0.5rem;
+          padding: 1rem;
+          margin-bottom: 1rem;
+          box-shadow: var(--shadow-sm);
+      }
+
+      .filter-group label {
+          display: block;
+          font-size: 0.875rem;
+          font-weight: 500;
+          margin-bottom: 0.5rem;
+          color: var(--secondary-color);
+      }
+
+      .filter-group select {
+          width: 100%;
+          padding: 0.75rem;
+          font-size: 0.95rem;
+          border-radius: 0.5rem;
+          background-color: var(--input-bg);
+          border: 1px solid var(--input-border);
+          color: var(--text-color);
+          appearance: none;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 0.75rem center;
+          background-size: 1rem;
+          padding-right: 2.5rem;
+      }
+
+      .filter-group select:focus {
+          border-color: var(--primary-color);
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      }
+
+      .map-container {
+          flex-grow: 1;
+          position: relative;
+      }
+
+      #map {
+          height: 100%;
+          width: 100%;
+      }
+
+      .marker-info-window {
+          padding: 1rem;
+          max-width: 300px;
+      }
+
+      .marker-info-window h4 {
+          color: var(--secondary-color);
+          margin-bottom: 0.5rem;
+          font-size: 1.1rem;
+      }
+
+      .marker-info-window img {
+          width: 100%;
+          border-radius: 0.375rem;
+          margin: 0.5rem 0;
+      }
+
+      .marker-info-window p {
+          margin: 0.25rem 0;
+          font-size: 0.9rem;
+      }
+
+      @media (max-width: 768px) {
+          .container {
+              flex-direction: column;
+          }
+          
+          .sidebar {
+              width: 100%;
+              max-height: 50vh;
+          }
+
+          .nav-links {
+              display: none;
+          }
+
+          .user-name {
+              display: none;
+          }
+      }
+  </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpLbJtpojpCBjolk2MVWQO1Y0q6H7XfsA&callback=initMap" async defer></script>
+    <script>
+      let map;
+      let markers = [];
+      let complaints = fetchComplaints();
+
+        async function fetchComplaints() {
+            try {
+                const response = await fetch('complaints/');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                complaints = await response.json();
+                addComplaintMarkers();
+            } catch (error) {
+                console.error('Error fetching complaints:', error);
+            }
+        }
+
+        console.log(complaints);
+
+
+      function initMap(latitude, longitude) {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: latitude, lng: longitude },
+          zoom: 12,
+        });
+
+        addMarker({ lat: latitude, lng: longitude }, "Your Location", "Default", "blue");
+        addComplaintMarkers();
+      }
+
+      function addMarker(location, issueType, severity, color) {
+        const marker = new google.maps.Marker({
+          position: location,
+          map: map,
+          title: `${issueType} - ${severity}`,
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 7,
+            fillColor: color,
+            fillOpacity: 1,
+            strokeWeight: 1,
+            strokeColor: "white",
+          },
+        });
+        markers.push(marker);
+        return marker;
+      }
+
+      function addComplaintMarkers() {
+        clearMarkers();
+        complaints.forEach((complaint) => {
+          let color;
+          switch (complaint.status) {
+            case "in-progress":
+              color = "yellow";
+              break;
+            case "pending":
+              color = "red";
+              break;
+            case "resolved":
+              color = "green";
+              break;
+            default:
+              color = "blue";
+          }
+          const marker = addMarker(complaint.location, complaint.issueType, complaint.severity, color);
+          
+          const infoWindow = new google.maps.InfoWindow({
+            content: `
+              <div class="marker-info-window">
+                <h3><strong>Status:</strong> ${complaint.status}</h3>
+                
+                <img src="${complaint.imageUrl}" alt="${complaint.issueType}" style="width: 100%; max-width: 300px; height: auto; margin-bottom: 10px;">
+                <p><strong>Date:</strong> ${complaint.date}</p>
+                <p><strong>Type of Issue:</strong> ${complaint.issueType}</p>
+                <p><strong>Severity:</strong> ${complaint.severity}</p>
+                <p><strong>Description:</strong> ${complaint.description}</p>
+              </div>
+            `
+          });
+
+          marker.addListener('mouseover', () => {
+            infoWindow.open(map, marker);
+          });
+
+          marker.addListener('mouseout', () => {
+            infoWindow.close();
+          });
+
+          marker.addListener('click', () => {
+            updateIssueDetails(complaint);
+          });
+        });
+      }
+
+      function clearMarkers() {
+        markers.forEach(marker => marker.setMap(null));
+        markers = [];
+      }
+
+      function updateIssueDetails(complaint) {
+        document.getElementById("issue-type-detail").innerText = complaint.issueType;
+        document.getElementById("issue-severity-detail").innerText = complaint.severity;
+        document.getElementById("issue-date-detail").innerText = complaint.date;
+        document.getElementById("issue-status-detail").innerText = complaint.status;
+        document.getElementById("issue-description-detail").innerText = complaint.description;
+      }
+
+      function filterComplaints() {
+        const statusFilter = document.getElementById("issue-status").value;
+        const severityFilter = document.getElementById("issue-severity").value;
+        const typeFilter = document.getElementById("issue-type").value;
+
+        const filteredComplaints = complaints.filter(complaint => 
+          (statusFilter === "all-statuses" || complaint.status === statusFilter) &&
+          (severityFilter === "all-severities" || complaint.severity === severityFilter) &&
+          (typeFilter === "all-issues" || complaint.issueType === typeFilter)
+        );
+
+        clearMarkers();
+        filteredComplaints.forEach(complaint => {
+          let color;
+          switch (complaint.status) {
+            case "in-progress":
+              color = "yellow";
+              break;
+            case "pending":
+              color = "red";
+              break;
+            case "resolved":
+              color = "green";
+              break;
+            default:
+              color = "blue";
+          }
+          const marker = addMarker(complaint.location, complaint.issueType, complaint.severity, color);
+          
+          const infoWindow = new google.maps.InfoWindow({
+            content: `
+              <div class="marker-info-window">
+                <h4>${complaint.issueType}</h4>
+                <img src="${complaint.imageUrl}" alt="${complaint.issueType}" style="width: 100%; max-width: 300px; height: auto; margin-bottom: 10px;">
+                <p><strong>Severity:</strong> ${complaint.severity}</p>
+                <p><strong>Status:</strong> ${complaint.status}</p>
+                <p><strong>Date:</strong> ${complaint.date}</p>
+                <p><strong>Description:</strong> ${complaint.description}</p>
+              </div>
+            `
+          });
+
+          marker.addListener('mouseover', () => {
+            infoWindow.open(map, marker);
+          });
+
+          marker.addListener('mouseout', () => {
+            infoWindow.close();
+          });
+
+          marker.addListener('click', () => {
+            updateIssueDetails(complaint);
+          });
+        });
+      }
+
+      window.onload = () => {
+        const userLatitude = 23.5898;
+        const userLongitude = 72.3789;
+        initMap(userLatitude, userLongitude);
+
+        document.getElementById("issue-status").addEventListener("change", filterComplaints);
+        document.getElementById("issue-severity").addEventListener("change", filterComplaints);
+        document.getElementById("issue-type").addEventListener("change", filterComplaints);
+      };
+    </script>
+  </head>
+  <body>
+    <header>
+      <nav>
+          <div class="logo">
+              <i class="fas fa-road"></i>
+              RoadWatch
+          </div>
+          <div class="nav-links">
+            <a href="{% url 'admin_home' %}">Home</a>
+            <a href="{% url 'complaint_list'%}">Manage Complaint</a>
+            <a href="{% url 'admin_report' %}">Report</a>
+          </div>
+          <div class="user-dropdown">
+              <div class="user-icon-link">
+                  <span class="user-name">Hello, {{ user.first_name|default:"User"}}</span>
+                  <div class="user-icon-circle">
+                      <i class="fas fa-user"></i>
+                  </div>
+              </div>
+              <div class="dropdown-content">
+                  <a href="{% url 'admin_profile_settings' %}">
+                      <i class="fas fa-user-cog"></i>
+                      Profile Settings
+                  </a>
+                  <a href="{% url 'logout' %}">
+                      <i class="fas fa-sign-out-alt"></i>
+                      Logout
+                  </a>
+              </div>
+          </div>
+      </nav>
+  </header>
+
+    <div class="container">
+      <div class="sidebar">
+        <h2>Filters</h2>
+        <div class="filter-group">
+          <label for="issue-status">Status</label>
+          <select id="issue-status">
+            <option value="all-statuses" selected>All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="issue-type">Issue Type</label>
+          <select id="issue-type">
+            <option value="all-issues" selected>All Issues</option>
+            <option value="pothole">Potholes</option>
+            <option value="crack">Cracks</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="issue-severity">Severity</label>
+          <select id="issue-severity">
+            <option value="all-severities" selected>All Severities</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </div>
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+    </div>
+  </body>
+</html>
