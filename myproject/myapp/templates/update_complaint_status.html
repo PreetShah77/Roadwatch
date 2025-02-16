@@ -24,12 +24,12 @@
         --pending-color: #e67e22;
       }
 
+      /* Reset & Base */
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-
       body {
         font-family: "Poppins", sans-serif;
         line-height: 1.6;
@@ -37,6 +37,7 @@
         background-color: var(--background-color);
       }
 
+      /* Header & Navigation */
       header {
         background-color: white;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -45,14 +46,6 @@
         top: 0;
         z-index: 1000;
       }
-
-      h1 {
-        text-align: center;
-        margin-bottom: 2rem;
-        color: var(--secondary-color);
-        font-weight: 600;
-    }
-
       nav {
         display: flex;
         justify-content: space-between;
@@ -60,39 +53,49 @@
         padding: 1rem 2rem;
         max-width: 1200px;
         margin: 0 auto;
+        width: 100%;
       }
-
       .logo {
         font-size: 1.5rem;
         font-weight: 600;
         color: var(--primary-color);
       }
-
+      /* Hamburger button – shown on mobile */
+      .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--secondary-color);
+        cursor: pointer;
+      }
+      /* Navigation Menu Container */
+      .nav-menu {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
       .nav-links {
         display: flex;
         gap: 1.5rem;
       }
-
       .nav-links a {
         color: var(--secondary-color);
         text-decoration: none;
         font-weight: 500;
         transition: color 0.3s ease;
       }
-
       .nav-links a:hover {
         color: var(--primary-color);
       }
-
+      /* User Dropdown – works on hover (desktop) */
       .user-dropdown {
         position: relative;
         display: inline-block;
       }
-
       .user-dropdown:hover .dropdown-content {
         display: block;
       }
-
       .user-icon-link {
         display: flex;
         align-items: center;
@@ -103,7 +106,6 @@
         font-weight: 500;
         cursor: pointer;
       }
-
       .user-icon-circle {
         width: 32px;
         height: 32px;
@@ -114,26 +116,21 @@
         justify-content: center;
         transition: background-color 0.3s ease;
       }
-
       .user-icon-circle i {
         color: white;
         font-size: 16px;
       }
-
       .user-dropdown:hover .user-icon-circle {
         background-color: var(--secondary-color);
       }
-
       .arrow-icon {
         font-size: 0.8rem;
         color: var(--secondary-color);
         transition: transform 0.3s ease;
       }
-
       .user-dropdown:hover .arrow-icon {
         transform: rotate(180deg);
       }
-
       .dropdown-content {
         display: none;
         position: absolute;
@@ -145,7 +142,10 @@
         border-radius: 5px;
         overflow: hidden;
       }
-
+      /* For mobile toggle of the user dropdown */
+      .dropdown-content.show {
+        display: block;
+      }
       .dropdown-content a {
         color: var(--secondary-color);
         padding: 12px 16px;
@@ -153,10 +153,11 @@
         display: block;
         transition: background-color 0.3s ease;
       }
-
       .dropdown-content a:hover {
         background-color: var(--background-color);
       }
+
+      /* Main Content & Form */
       .main-content {
         margin-top: 80px;
         padding: 2rem;
@@ -164,52 +165,43 @@
         margin-left: auto;
         margin-right: auto;
       }
-
       .container {
         background-color: white;
         padding: 2rem;
         border-radius: 10px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       }
-
       h1 {
         text-align: center;
         margin-bottom: 2rem;
         color: var(--secondary-color);
         font-weight: 600;
       }
-
       .messages {
         margin-bottom: 1.5rem;
       }
-
       .message {
         padding: 1rem;
         border-radius: 5px;
         font-weight: 500;
       }
-
       .message.success {
         background-color: var(--success-color);
         color: white;
       }
-
       .message.error {
         background-color: var(--accent-color);
         color: white;
       }
-
       .form-group {
         margin-bottom: 1.5rem;
       }
-
       label {
         display: block;
         margin-bottom: 0.5rem;
         color: var(--secondary-color);
         font-weight: 500;
       }
-
       select,
       textarea {
         width: 100%;
@@ -218,7 +210,6 @@
         border-radius: 5px;
         font-family: inherit;
       }
-
       .btn-save {
         background-color: var(--primary-color);
         color: white;
@@ -229,7 +220,6 @@
         font-size: 1rem;
         transition: background-color 0.3s ease;
       }
-
       .btn-save:hover {
         background-color: #2980b9;
       }
@@ -239,22 +229,18 @@
         font-size: 0.85rem;
         font-weight: 500;
       }
-
       .status-pending {
         background-color: var(--pending-color);
         color: white;
       }
-
       .status-in-progress {
         background-color: var(--warning-color);
         color: var(--secondary-color);
       }
-
       .status-resolved {
         background-color: var(--success-color);
         color: white;
       }
-
       .action-btn {
         padding: 0.5rem 1rem;
         border: none;
@@ -265,25 +251,20 @@
         margin-right: 0.5rem;
         text-decoration: none;
       }
-
       .btn-view {
         background-color: var(--pending-color);
         color: white;
       }
-
       .btn-view:hover {
         background-color: #91312c;
       }
-
       .btn-delete {
         background-color: var(--accent-color);
         color: white;
       }
-
       .btn-delete:hover {
         background-color: #c0392b;
       }
-
       .modal {
         display: none;
         position: fixed;
@@ -294,7 +275,6 @@
         background-color: rgba(0, 0, 0, 0.5);
         z-index: 1000;
       }
-
       .modal-content {
         background-color: white;
         padding: 2rem;
@@ -303,7 +283,6 @@
         margin: 2rem auto;
         position: relative;
       }
-
       .close-modal {
         position: absolute;
         top: 1rem;
@@ -312,42 +291,19 @@
         font-size: 1.5rem;
         color: var(--secondary-color);
       }
-
       .modal-content h3 {
         margin-bottom: 1rem;
         color: var(--secondary-color);
       }
-
       .modal-content p {
         margin-bottom: 0.5rem;
       }
-
       .delete-modal-buttons {
         margin-top: 1.5rem;
         display: flex;
         justify-content: flex-end;
         gap: 1rem;
       }
-
-      @media (max-width: 768px) {
-        .filters {
-          flex-direction: column;
-        }
-
-        .filter-group {
-          width: 100%;
-        }
-
-        table {
-          font-size: 0.9rem;
-        }
-
-        .action-btn {
-          padding: 0.4rem 0.8rem;
-          font-size: 0.8rem;
-        }
-      }
-      
       .filters {
         background-color: white;
         padding: 1.5rem;
@@ -358,27 +314,24 @@
         gap: 1rem;
         flex-wrap: wrap;
       }
-
       .filter-group {
         flex: 1;
         min-width: 200px;
       }
-
       .filter-group label {
         display: block;
         margin-bottom: 0.5rem;
         color: var(--secondary-color);
         font-weight: 500;
       }
-
-      .filter-group select, .filter-group input {
+      .filter-group select,
+      .filter-group input {
         width: 100%;
         padding: 0.5rem;
         border: 1px solid #ddd;
         border-radius: 5px;
         font-family: inherit;
       }
-
       .pagination {
         display: flex;
         justify-content: center;
@@ -386,7 +339,6 @@
         margin-top: 2rem;
         gap: 0.5rem;
       }
-
       .pagination button {
         padding: 0.5rem 1rem;
         border: 1px solid var(--primary-color);
@@ -396,51 +348,42 @@
         cursor: pointer;
         transition: all 0.3s ease;
       }
-
       .pagination button:hover {
         background-color: var(--primary-color);
         color: white;
       }
-
       .pagination button.active {
         background-color: var(--primary-color);
         color: white;
       }
-
       .pagination button:disabled {
         border-color: #ccc;
         color: #ccc;
         cursor: not-allowed;
       }
-
       .pagination button:disabled:hover {
         background-color: white;
         color: #ccc;
       }
-
       .page-info {
         margin: 1rem 0;
         text-align: center;
         color: var(--secondary-color);
       }
-
       tr.hidden {
         display: none;
       }
-
       .table-header-container {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin: 1rem 0;
       }
-
       .page-info {
-        margin: 0;  /* Remove margin as it's now in a flex container */
+        margin: 0;
         color: var(--secondary-color);
       }
-
-      .btn-cid{
+      .btn-cid {
         background-color: var(--success-color);
         color: white;
         padding: 0.5rem 1rem;
@@ -451,12 +394,10 @@
         gap: 0.5rem;
         transition: background-color 0.3s ease;
       }
-
       .btn-cid i {
         font-size: 0.9rem;
       }
-
-      .btn-reported-on{
+      .btn-reported-on {
         background-color: rgb(21, 5, 104);
         color: white;
         padding: 0.5rem 1rem;
@@ -466,27 +407,168 @@
         align-items: center;
         gap: 0.5rem;
         transition: background-color 0.3s ease;
-        margin-left: 47%;
       }
-
       .btn-reported-on i {
         font-size: 0.9rem;
+      }
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+      }
+
+      .nav-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      /* Update hamburger styles */
+      .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--secondary-color);
+        cursor: pointer;
+        margin-right: 1rem;
+      }
+
+      /* Rest of the styles remain the same until media queries */
+
+      @media (max-width: 768px) {
+        .nav-left {
+          flex: 1;
+        }
+
+        .hamburger {
+          display: block;
+        }
+
+        .nav-menu {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          width: 100%;
+          background-color: white;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-menu.active {
+          display: block;
+        }
+
+        .nav-links {
+          flex-direction: column;
+          width: 100%;
+          padding: 1rem 0;
+        }
+
+        .nav-links a {
+          padding: 0.5rem 1rem;
+          width: 100%;
+          text-align: center;
+        }
+
+        /* Hide the user dropdown from nav-menu */
+        .nav-menu .user-dropdown {
+          display: none;
+        }
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 768px) {
+        nav {
+          flex-wrap: wrap;
+        }
+        .hamburger {
+          display: block;
+        }
+        .nav-menu {
+          display: none;
+          flex-direction: column;
+          width: 100%;
+          background-color: white;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .nav-menu.active {
+          display: flex;
+        }
+        .nav-menu .nav-links {
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+          width: 100%;
+          padding: 1rem 0;
+        }
+        .nav-links a {
+          padding: 0.5rem 1rem;
+          width: 100%;
+          text-align: center;
+        }
+        .main-content {
+          margin-top: 100px;
+          padding: 1rem;
+        }
+      }
+      @media (max-width: 480px) {
+        .main-content {
+          margin-top: 120px;
+          padding: 1rem;
+        }
+        .container {
+          padding: 1rem;
+        }
+        h1 {
+          font-size: 1.5rem;
+        }
+        label,
+        .btn-save,
+        .btn-cid,
+        .btn-reported-on,
+        .nav-links a,
+        .user-icon-link {
+          font-size: 0.9rem;
+        }
       }
     </style>
   </head>
   <body>
     <header>
-        <nav>
+      <nav>
+        <!-- Left section with logo -->
+        <div class="nav-left">
           <div class="logo">RoadWatch</div>
+        </div>
+
+        <!-- Center section with navigation links -->
+        <div class="nav-menu">
           <div class="nav-links">
             <a href="{% url 'admin_home' %}">Home</a>
             <a href="{% url 'complaint_list'%}">Manage Complaint</a>
             <a href="{% url 'admin_report' %}">Report</a>
             <a href="{% url 'admin_map' %}">Map</a>
           </div>
-          <div class="nav-links user-dropdown">
+        </div>
+
+        <!-- Right section with hamburger and user profile -->
+        <div class="nav-right">
+          <button class="hamburger" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="user-dropdown">
             <a href="#" class="user-icon-link">
-              <span class="user-name">Hello, {{ user.first_name|default:"User" }}</span>
               <div class="user-icon-circle">
                 <i class="fas fa-user"></i>
               </div>
@@ -497,8 +579,9 @@
               <a href="{% url 'logout' %}">Logout</a>
             </div>
           </div>
-        </nav>
-      </header>
+        </div>
+      </nav>
+    </header>
 
     <div class="main-content">
       <div class="container">
@@ -515,8 +598,12 @@
         <form method="post" action="{% url 'update_complaint_status' complaint.id %}">
           {% csrf_token %}
           <div class="form-group">
-            <label for = 'complaint_id' class="btn-cid">Complaint ID : {{complaint.complaint_id}}</label>
-            <label class="btn-reported-on">Reported On : {{complaint.timestamp.date}} ({{complaint.status}})</label>
+            <label for="complaint_id" class="btn-cid">
+              Complaint ID : {{ complaint.complaint_id }}
+            </label>
+            <label class="btn-reported-on">
+              Reported On : {{ complaint.timestamp.date }} ({{ complaint.status }})
+            </label>
             <label for="status">Complaint Status</label>
             <select id="status" name="status" required>
               <option value="">Select a status</option>
@@ -535,7 +622,33 @@
     </div>
 
     <script>
-      // Add any necessary JavaScript functionality
+      // Toggle mobile navigation & user dropdown on mobile devices
+      document.addEventListener("DOMContentLoaded", function () {
+        const hamburger = document.querySelector(".hamburger");
+        const navMenu = document.querySelector(".nav-menu");
+        const userIconLink = document.querySelector(".user-icon-link");
+        const dropdownContent = document.querySelector(".dropdown-content");
+
+        hamburger.addEventListener("click", function () {
+          navMenu.classList.toggle("active");
+        });
+
+        // For mobile, toggle the user dropdown on click
+        userIconLink.addEventListener("click", function (e) {
+          e.preventDefault();
+          dropdownContent.classList.toggle("show");
+        });
+
+        // Optional: close the dropdown if clicking outside
+        document.addEventListener("click", function (e) {
+          if (
+            !userIconLink.contains(e.target) &&
+            !dropdownContent.contains(e.target)
+          ) {
+            dropdownContent.classList.remove("show");
+          }
+        });
+      });
     </script>
   </body>
 </html>
