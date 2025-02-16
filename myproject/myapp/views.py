@@ -358,15 +358,14 @@ def raise_complaint(request):
         return redirect('login')
 
     if request.method == 'POST':
-        # Safely get form data with defaults
-        issue_type = request.POST.get('issue_type', '')
+        # Get form data except issue_type since we'll determine it from the model
         severity = request.POST.get('severity', '')
         description = request.POST.get('description', '')
         coordinates = request.POST.get('coordinates', None)
         location = request.POST.get('location', '')
 
         # Validate required fields
-        if not (issue_type and severity and coordinates and location):
+        if not (severity and coordinates and location):
             if not coordinates:
                 messages.error(request, "Please select a location on the map.")
                 return redirect('raise_complaint')
@@ -376,28 +375,44 @@ def raise_complaint(request):
 
         email = user.email
 
-        # Handle image upload and run YOLO detection
         if 'image' in request.FILES:
             image = request.FILES['image']
             try:
-                # Convert image to format suitable for YOLO processing
+                # Convert image for YOLO processing
                 pil_image = Image.open(image).convert('RGB')
                 image_np = np.array(pil_image)
 
                 # Perform detection
                 results = model(image_np)
-                names = model.names  # Class names
-                detected_classes = [names[int(box.cls[0])] for box in results[0].boxes]
+                names = model.names
+                
+                # Get detected classes and their confidence scores
+                detected_objects = []
+                confidence_scores = []
+                for box in results[0].boxes:
+                    class_id = int(box.cls[0])
+                    confidence = float(box.conf[0])
+                    detected_objects.append(names[class_id])
+                    confidence_scores.append(confidence)
 
-                # Define relevant classes
-                crack_classes = ["pothole", "alligator", "traversal", "longitudinal"]
-                is_crack_detected = any(cls in crack_classes for cls in detected_classes)
+                # Map detected classes to issue types
+                issue_type_mapping = {
+                    "pothole": "pothole",
+                    "alligator": "crack",
+                    "traversal": "crack",
+                    "longitudinal": "crack"
+                }
 
-                if not is_crack_detected:
-                    messages.error(request, "No cracks or potholes detected. Complaint not registered.")
+                # Determine issue type based on detection with highest confidence
+                if detected_objects:
+                    max_conf_idx = confidence_scores.index(max(confidence_scores))
+                    detected_class = detected_objects[max_conf_idx]
+                    issue_type = issue_type_mapping.get(detected_class, "other")
+                else:
+                    messages.error(request, "No road damage detected. Complaint not registered.")
                     return redirect('raise_complaint')
 
-                # If cracks are detected, save the complaint
+                # Create and save the complaint with detected issue_type
                 report = Complaint(
                     issue_type=issue_type,
                     severity=severity,
@@ -408,17 +423,15 @@ def raise_complaint(request):
                 )
                 report.save()
 
-                # Rename the image using the complaint ID and save it
+                # Save the image
                 fs = FileSystemStorage()
                 image_extension = os.path.splitext(image.name)[1]
                 image_name = f"{report.complaint_id}{image_extension}"
                 image_url = fs.save(image_name, image)
-
-                # Update the report with the image URL
                 report.image = image_url
                 report.save()
 
-                messages.success(request, "Complaint raised successfully!")
+                messages.success(request, f"Complaint raised successfully! Detected issue: {issue_type}")
                 return redirect('raise_complaint')
 
             except Exception as e:
