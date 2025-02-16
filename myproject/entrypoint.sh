@@ -10,6 +10,6 @@ done
 echo "Applying database migrations..."
 python manage.py migrate
 
-# Start server
+# Start server using PORT environment variable
 echo "Starting server..."
-python manage.py runserver 0.0.0.0:8000 
+python manage.py runserver 0.0.0.0:${PORT:-8000}
