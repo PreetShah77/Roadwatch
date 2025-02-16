@@ -673,7 +673,9 @@ textarea {
                 </div>
     
                 <div class="map-container">
-                    <div id="map"></div>
+                    <div id="map" style="height: 400px; width: 100%; margin-bottom: 20px;"></div>
+                    <input type="hidden" id="latitude" name="latitude">
+                    <input type="hidden" id="longitude" name="longitude">
                 </div>
     
                 <button type="submit" class="submit-button">
@@ -688,6 +690,8 @@ textarea {
 
     <!-- Add Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDpLbJtpojpCBjolk2MVWQO1Y0q6H7XfsA&callback=initMap" async defer></script>
 
     <script>
         let map = null;
@@ -928,6 +932,59 @@ function getLocation() {
             } else {
                 marker = L.marker([lat, lng]).addTo(map);
             }
+        }
+
+        function initMap() {
+            // Default center (can be set to user's location)
+            const defaultLocation = { lat: -34.397, lng: 150.644 };
+            
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 15,
+                center: defaultLocation,
+            });
+
+            // Create initial marker
+            marker = new google.maps.Marker({
+                position: defaultLocation,
+                map: map,
+                draggable: true
+            });
+
+            // Try to get user's current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const pos = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                        };
+                        map.setCenter(pos);
+                        marker.setPosition(pos);
+                        updateLocationInputs(pos);
+                    },
+                    () => {
+                        // Handle location error
+                        console.log("Error: The Geolocation service failed.");
+                    }
+                );
+            }
+
+            // Update marker and hidden inputs when marker is dragged
+            marker.addListener("dragend", () => {
+                const pos = marker.getPosition();
+                updateLocationInputs(pos);
+            });
+
+            // Update marker and hidden inputs when map is clicked
+            map.addListener("click", (event) => {
+                marker.setPosition(event.latLng);
+                updateLocationInputs(event.latLng);
+            });
+        }
+
+        function updateLocationInputs(position) {
+            document.getElementById("latitude").value = position.lat();
+            document.getElementById("longitude").value = position.lng();
         }
     </script>
 </body>
