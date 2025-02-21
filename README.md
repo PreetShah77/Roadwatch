@@ -196,4 +196,3 @@ myproject/
 ├── manage.py                      # Django project manager file
 ├── requirements.txt               # List of Python dependencies
 └── roadwatch_database.sql # SQL file for importing the database
-# Road-watch
