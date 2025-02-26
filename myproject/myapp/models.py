@@ -75,7 +75,7 @@ class Complaint(models.Model):
     ]
     severity = models.CharField(max_length=10, choices=severity_choices)
     description = models.TextField()
-    location = models.CharField(max_length=100, default='Mehsana')
+    location = models.CharField(max_length=255, default='Mehsana')
     coordinates = models.CharField(max_length=100)  # For storing latitude, longitude
     image = models.ImageField(upload_to='reports/images/')  # Path for uploaded images
     google_drive_url = models.URLField(blank=True, null=True)

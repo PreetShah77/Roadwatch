@@ -400,7 +400,10 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody id="complaintsTable">
+            <!-- Before the raise complaint -->
+            <!-- ///////////////////////////// -->
+
+            <!-- <tbody id="complaintsTable">
                 {% for complaint in complaints %}
                 <tr>
                     <td>{{ complaint.complaint_id }}</td>
@@ -418,6 +421,37 @@
                             <i class="fas fa-trash-alt"></i>
                             Delete
                         </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody> -->
+            
+            <!-- After the raise complaint code -->
+            <!-- ///////////////////////////// -->
+            <tbody id="complaintsTable">
+                {% for complaint in complaints %}
+                <tr>
+                    <td>{{ complaint.complaint_id }}</td>
+                    <td>{{ complaint.location }}</td>
+                    <td>{{ complaint.issue_type|capfirst }}</td>
+                    <td>
+                        <span class="status-badge status-{{ complaint.status }}">
+                            <i class="fas fa-{% if complaint.status == 'pending' %}clock{% elif complaint.status == 'in-progress' %}tools{% else %}check-circle{% endif %}"></i>
+                            {{ complaint.get_status_display|title }} {{ complaint.resolved_on }}
+                        </span>
+                    </td>
+                    <td>{{ complaint.timestamp.date }}</td>
+                    <td>
+                        {% if complaint.email == user.email %}
+                            <a class="action-btn btn-delete" href="{% url 'delete_complaint' complaint.complaint_id %}" onclick="return confirmDelete(event, this);">
+                                <i class="fas fa-trash-alt"></i>
+                                Delete
+                            </a>
+                        {% else %}
+                            <span class="status-badge" style="background-color: gray; color: white;">
+                                Nearby Complaint
+                            </span>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

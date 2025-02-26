@@ -351,14 +351,121 @@ def change_password(request):
 model_path = os.path.join(settings.BASE_DIR, 'myapp', 'src', 'ml_model', 'best.pt')
 model = YOLO(model_path)
 
+# before nearby raised complaint was working
+# @login_required
+# def raise_complaint(request):
+#     user = request.user
+#     if not user:
+#         return redirect('login')
+
+#     if request.method == 'POST':
+#         # Get form data except issue_type since we'll determine it from the model
+#         severity = request.POST.get('severity', '')
+#         description = request.POST.get('description', '')
+#         coordinates = request.POST.get('coordinates', None)
+#         location = request.POST.get('location', '')
+
+#         # Validate required fields
+#         if not (severity and coordinates and location):
+#             if not coordinates:
+#                 messages.error(request, "Please select a location on the map.")
+#                 return redirect('raise_complaint')
+
+#             messages.error(request, "All fields are required.")
+#             return redirect('raise_complaint')
+
+#         email = user.email
+
+#         if 'image' in request.FILES:
+#             image = request.FILES['image']
+#             try:
+#                 # Convert image for YOLO processing
+#                 pil_image = Image.open(image).convert('RGB')
+#                 image_np = np.array(pil_image)
+
+#                 # Perform detection
+#                 results = model(image_np)
+#                 names = model.names
+                
+#                 # Get detected classes and their confidence scores
+#                 detected_objects = []
+#                 confidence_scores = []
+#                 for box in results[0].boxes:
+#                     class_id = int(box.cls[0])
+#                     confidence = float(box.conf[0])
+#                     detected_objects.append(names[class_id])
+#                     confidence_scores.append(confidence)
+
+#                 # Map detected classes to issue types
+#                 issue_type_mapping = {
+#                     "pothole": "pothole",
+#                     "alligator": "crack",
+#                     "traversal": "crack",
+#                     "longitudinal": "crack"
+#                 }
+
+#                 # Determine issue type based on detection with highest confidence
+#                 if detected_objects:
+#                     max_conf_idx = confidence_scores.index(max(confidence_scores))
+#                     detected_class = detected_objects[max_conf_idx]
+#                     issue_type = issue_type_mapping.get(detected_class, "other")
+#                 else:
+#                     messages.error(request, "No road damage detected. Complaint not registered.")
+#                     return redirect('raise_complaint')
+
+#                 # Create and save the complaint with detected issue_type
+#                 report = Complaint(
+#                     issue_type=issue_type,
+#                     severity=severity,
+#                     description=description,
+#                     coordinates=coordinates,
+#                     location=location,
+#                     email=email,
+#                 )
+#                 report.save()
+
+#                 # Save the image
+#                 fs = FileSystemStorage()
+#                 image_extension = os.path.splitext(image.name)[1]
+#                 image_name = f"{report.complaint_id}{image_extension}"
+#                 image_url = fs.save(image_name, image)
+#                 report.image = image_url
+#                 report.save()
+
+#                 messages.success(request, f"Complaint raised successfully! Detected issue: {issue_type}")
+#                 return redirect('raise_complaint')
+
+#             except Exception as e:
+#                 messages.error(request, f"An error occurred while processing the image: {str(e)}")
+#                 return redirect('raise_complaint')
+
+#         else:
+#             messages.error(request, "Please upload an image for analysis.")
+#             return redirect('raise_complaint')
+
+#     return render(request, 'raise.html')
+
+
+# after nearby raised complaint working
+from math import radians, sin, cos, sqrt, atan2
+
 @login_required
 def raise_complaint(request):
     user = request.user
     if not user:
         return redirect('login')
 
+    # Haversine formula to calculate distance between two points (in meters)
+    def haversine(lat1, lon1, lat2, lon2):
+        R = 6371000  # Earth's radius in meters
+        lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1-a))
+        return R * c
+
     if request.method == 'POST':
-        # Get form data except issue_type since we'll determine it from the model
         severity = request.POST.get('severity', '')
         description = request.POST.get('description', '')
         coordinates = request.POST.get('coordinates', None)
@@ -368,25 +475,35 @@ def raise_complaint(request):
         if not (severity and coordinates and location):
             if not coordinates:
                 messages.error(request, "Please select a location on the map.")
-                return redirect('raise_complaint')
-
-            messages.error(request, "All fields are required.")
+            else:
+                messages.error(request, "All fields are required.")
             return redirect('raise_complaint')
 
         email = user.email
+        lat, lon = map(float, coordinates.split(','))
 
+        # Check for existing complaints within 300 meters
+        existing_complaints = Complaint.objects.all()
+        for complaint in existing_complaints:
+            if complaint.coordinates:
+                try:
+                    existing_lat, existing_lon = map(float, complaint.coordinates.split(','))
+                    distance = haversine(lat, lon, existing_lat, existing_lon)
+                    if distance <= 300:  # 300 meters buffer
+                        messages.info(request, f"A similar complaint already exists at this location (Complaint ID: {complaint.complaint_id}). It will be visible in your complaint list.")
+                        return redirect('raise_complaint')
+                except (ValueError, AttributeError):
+                    continue  # Skip invalid coordinates
+
+        # If no nearby complaint exists, process the new complaint
         if 'image' in request.FILES:
             image = request.FILES['image']
             try:
-                # Convert image for YOLO processing
                 pil_image = Image.open(image).convert('RGB')
                 image_np = np.array(pil_image)
-
-                # Perform detection
                 results = model(image_np)
                 names = model.names
                 
-                # Get detected classes and their confidence scores
                 detected_objects = []
                 confidence_scores = []
                 for box in results[0].boxes:
@@ -395,7 +512,6 @@ def raise_complaint(request):
                     detected_objects.append(names[class_id])
                     confidence_scores.append(confidence)
 
-                # Map detected classes to issue types
                 issue_type_mapping = {
                     "pothole": "pothole",
                     "alligator": "crack",
@@ -403,7 +519,6 @@ def raise_complaint(request):
                     "longitudinal": "crack"
                 }
 
-                # Determine issue type based on detection with highest confidence
                 if detected_objects:
                     max_conf_idx = confidence_scores.index(max(confidence_scores))
                     detected_class = detected_objects[max_conf_idx]
@@ -412,7 +527,7 @@ def raise_complaint(request):
                     messages.error(request, "No road damage detected. Complaint not registered.")
                     return redirect('raise_complaint')
 
-                # Create and save the complaint with detected issue_type
+                # Save the new complaint
                 report = Complaint(
                     issue_type=issue_type,
                     severity=severity,
@@ -423,7 +538,6 @@ def raise_complaint(request):
                 )
                 report.save()
 
-                # Save the image
                 fs = FileSystemStorage()
                 image_extension = os.path.splitext(image.name)[1]
                 image_name = f"{report.complaint_id}{image_extension}"
@@ -437,13 +551,11 @@ def raise_complaint(request):
             except Exception as e:
                 messages.error(request, f"An error occurred while processing the image: {str(e)}")
                 return redirect('raise_complaint')
-
         else:
             messages.error(request, "Please upload an image for analysis.")
             return redirect('raise_complaint')
 
     return render(request, 'raise.html')
-
 
 # @login_required
 # def raise_complaint(request):
@@ -545,36 +657,96 @@ def user_home(request):
         return redirect('login')
     return render(request, 'user.html')
 
+#before nearby raised compliants was working
+# @login_required
+# def view_complaint(request):
+#     user = request.user
+#     if not user:
+#         return redirect('login')
+#     status_filter = request.GET.get('statusFilter', 'all')
+#     sort_filter = request.GET.get('sortFilter', 'newest')
 
+#     # Get the logged-in user's email
+#     user_email = request.user.email  # Assuming the user is logged in
+    
+#     # Filter complaints where the email matches the logged-in user's email
+#     complaints = Complaint.objects.filter(email=user_email)
 
+#     # Filter by status if it's not 'all'
+#     if status_filter != 'all':
+#         complaints = complaints.filter(status=status_filter)
+
+#     # Sort by date based on the user's choice
+#     if sort_filter == 'oldest':
+#         complaints = complaints.order_by('timestamp')
+#     else:
+#         complaints = complaints.order_by('-timestamp')
+
+#     context = {
+#         'complaints': complaints,
+#     }
+#     return render(request, 'complaint.html', context)
+
+#after nearby raised complaints working
 @login_required
 def view_complaint(request):
     user = request.user
     if not user:
         return redirect('login')
+
+    # Haversine formula to calculate distance between two points (in meters)
+    def haversine(lat1, lon1, lat2, lon2):
+        R = 6371000  # Earth's radius in meters
+        lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        c = 2 * atan2(sqrt(a), sqrt(1-a))
+        return R * c
+
     status_filter = request.GET.get('statusFilter', 'all')
     sort_filter = request.GET.get('sortFilter', 'newest')
 
-    # Get the logged-in user's email
-    user_email = request.user.email  # Assuming the user is logged in
-    
-    # Filter complaints where the email matches the logged-in user's email
-    complaints = Complaint.objects.filter(email=user_email)
+    # Get complaints raised by the user
+    user_complaints = Complaint.objects.filter(email=user.email)
 
-    # Filter by status if it's not 'all'
+    # Find nearby complaints (within 300 meters) raised by others
+    all_complaints = Complaint.objects.exclude(email=user.email)  # Exclude user's own complaints
+    nearby_complaints = []
+    for user_complaint in user_complaints:
+        if user_complaint.coordinates:
+            try:
+                user_lat, user_lon = map(float, user_complaint.coordinates.split(','))
+                for complaint in all_complaints:
+                    if complaint.coordinates:
+                        try:
+                            other_lat, other_lon = map(float, complaint.coordinates.split(','))
+                            distance = haversine(user_lat, user_lon, other_lat, other_lon)
+                            if distance <= 300 and complaint not in nearby_complaints:
+                                nearby_complaints.append(complaint)
+                        except (ValueError, AttributeError):
+                            continue
+            except (ValueError, AttributeError):
+                continue
+
+    # Combine user's complaints with nearby complaints
+    complaints = list(user_complaints) + nearby_complaints
+
+    # Apply filters
     if status_filter != 'all':
-        complaints = complaints.filter(status=status_filter)
+        complaints = [c for c in complaints if c.status == status_filter]
 
-    # Sort by date based on the user's choice
+    # Sort by date
     if sort_filter == 'oldest':
-        complaints = complaints.order_by('timestamp')
+        complaints.sort(key=lambda x: x.timestamp)
     else:
-        complaints = complaints.order_by('-timestamp')
+        complaints.sort(key=lambda x: x.timestamp, reverse=True)
 
     context = {
         'complaints': complaints,
     }
     return render(request, 'complaint.html', context)
+
 
 @login_required
 def delete_complaint(request, complaint_id):
