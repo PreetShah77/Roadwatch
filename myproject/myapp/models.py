@@ -5,6 +5,8 @@ from django.utils import timezone
 import random
 import string
 from django.utils.timezone import now
+from django.db import models
+from django.contrib.auth import get_user_model
 
 # Custom user manager to handle creation of admin and general users
 class CustomUserManager(BaseUserManager):
@@ -42,13 +44,11 @@ class CustomUser(AbstractBaseUser):
     REQUIRED_FIELDS = ['first_name', 'last_name']
 
     def save(self, *args, **kwargs):
-        # Automatically set full_name and is_government_official based on is_admin when saving
         self.full_name = f"{self.first_name} {self.last_name}"
-        if self.is_admin==1 :
-            self.is_government_official = self.is_admin  # Set is_government_official to match is_admin
+        if self.is_admin == 1:
+            self.is_government_official = self.is_admin
         super().save(*args, **kwargs)
 
-    # Permission methods for admin and government roles
     def has_perm(self, perm, obj=None):
         return self.is_admin or self.is_government_official
 
@@ -57,8 +57,6 @@ class CustomUser(AbstractBaseUser):
 
     def __str__(self):
         return self.full_name
-
-
 # Complaint model to store reported issues and allow status updates
 
 class Complaint(models.Model):
@@ -75,10 +73,9 @@ class Complaint(models.Model):
     ]
     severity = models.CharField(max_length=10, choices=severity_choices)
     description = models.TextField()
-    location = models.CharField(max_length=255, default='Mehsana')
+    location = models.CharField(max_length=100, default='Mehsana')
     coordinates = models.CharField(max_length=100)  # For storing latitude, longitude
     image = models.ImageField(upload_to='reports/images/')  # Path for uploaded images
-    google_drive_url = models.URLField(blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     email = models.EmailField()
 
@@ -110,6 +107,18 @@ class Complaint(models.Model):
         return f"Report #{self.complaint_id} - {self.issue_type} - {self.severity}"
 
 
+
+User1 = get_user_model()
+class UserAttemptedLocation(models.Model):
+    user = models.ForeignKey(User1, on_delete=models.CASCADE, related_name='attempted_locations')
+    coordinates = models.CharField(max_length=100)  # Store as "lat,lon"
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.coordinates}"
+
+    class Meta:
+        ordering = ['-timestamp']  # Order by most recent first
 
 class Employee(AbstractBaseUser):
     
