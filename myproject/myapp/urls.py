@@ -47,6 +47,9 @@ urlpatterns = [
     path('adminhome/settings/', views.admin_setting, name='admin_setting'),
     path('assign_task/', views.assign_task, name='assign_task'),
     path('generate_report/', views.generate_report, name='generate_report'),
+    path('get_dashboard_data/', views.get_dashboard_data, name='get_dashboard_data'),
+    path('admin_report/', views.admin_report, name='admin_report'),
+    path('export_to_excel/', views.export_to_excel, name='export_to_excel'),
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

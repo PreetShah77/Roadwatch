@@ -1,78 +1,93 @@
-// Modern Dashboard JavaScript
-
-// Chart.js: Create Bar Chart for Metrics Overview
+// admin-dshboard.js
 const barCtx = document.getElementById('barChart').getContext('2d');
-let barChart;
-
-// Chart.js: Create Pie Chart for Case Analytics
 const pieCtx = document.getElementById('pieChart').getContext('2d');
-let pieChart;
-
-// Chart.js: Create Line Chart for Metrics Overview in Right Sidebar
 const lineCtx = document.getElementById('lineChart').getContext('2d');
-let lineChart;
+const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
 
-// Function to initialize charts
-function initializeCharts() {
+let barChart, pieChart, lineChart, doughnutChart;
+let currentPage = 1;
+const casesPerPage = 5;
+
+async function fetchDashboardData(timeRange, location, status, severity, page = 1) {
+    const url = new URL('/get_dashboard_data/', window.location.origin);
+    url.searchParams.append('timeRange', timeRange);
+    if (location) url.searchParams.append('location', location);
+    if (status) url.searchParams.append('status', status);
+    if (severity) url.searchParams.append('severity', severity);
+    url.searchParams.append('page', page);
+    url.searchParams.append('limit', casesPerPage);
+
+    const response = await fetch(url, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+    return await response.json();
+}
+
+function initializeCharts(data) {
     barChart = new Chart(barCtx, {
         type: 'bar',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-            datasets: [{
-                label: 'Total Cases',
-                data: [400, 500, 600, 700, 800, 900, 1000],
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }, {
-                label: 'Solved Cases',
-                data: [250, 350, 450, 550, 650, 750, 850],
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }, {
-                label: 'Pending Cases',
-                data: [150, 150, 150, 150, 150, 150, 150],
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                borderColor: 'rgba(255, 206, 86, 1)',
-                borderWidth: 1
-            }]
+            labels: data.chartData.labels,
+            datasets: [
+                { label: 'Total Cases', data: data.chartData.totalCases, backgroundColor: '#4F46E5', borderColor: '#4338CA', borderWidth: 1, borderRadius: 5 },
+                { label: 'Solved Cases', data: data.chartData.solvedCases, backgroundColor: '#10B981', borderColor: '#0d8f68', borderWidth: 1, borderRadius: 5 },
+                { label: 'Pending Cases', data: data.chartData.pendingCases, backgroundColor: '#F97316', borderColor: '#e66a14', borderWidth: 1, borderRadius: 5 }
+            ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
-                y: {
-                    beginAtZero: true
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: '#E5E7EB' },
+                    ticks: { color: '#374151', font: { size: 12, family: 'Poppins' } }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: '#374151', font: { size: 12, family: 'Poppins' } }
+                }
+            },
+            plugins: {
+                legend: { 
+                    position: 'top',
+                    labels: { color: '#374151', font: { size: 14, family: 'Poppins' } }
+                },
+                tooltip: { 
+                    backgroundColor: '#1F2937',
+                    titleFont: { size: 14, family: 'Poppins' },
+                    bodyFont: { size: 12, family: 'Poppins' }
                 }
             }
         }
     });
 
-    const solvedCases = 850;
-    const pendingCases = 150;
-
     pieChart = new Chart(pieCtx, {
         type: 'pie',
         data: {
             labels: [
-                `Solved Cases: ${solvedCases} (${((solvedCases / (solvedCases + pendingCases)) * 100).toFixed(1)}%)`,
-                `Pending Cases: ${pendingCases} (${((pendingCases / (solvedCases + pendingCases)) * 100).toFixed(1)}%)`
+                `Solved: ${data.pieChartData.solvedCases} (${((data.pieChartData.solvedCases / (data.pieChartData.solvedCases + data.pieChartData.pendingCases)) * 100).toFixed(1)}%)`,
+                `Pending: ${data.pieChartData.pendingCases} (${((data.pieChartData.pendingCases / (data.pieChartData.solvedCases + data.pieChartData.pendingCases)) * 100).toFixed(1)}%)`
             ],
             datasets: [{
-                data: [solvedCases, pendingCases],
-                backgroundColor: ['#4BC0C0', '#FFCE56'],
+                data: [data.pieChartData.solvedCases, data.pieChartData.pendingCases],
+                backgroundColor: ['#10B981', '#F97316'],
+                borderColor: ['#0d8f68', '#e66a14'],
+                borderWidth: 2
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function (tooltipItem) {
-                            const data = tooltipItem.dataset.data[tooltipItem.dataIndex];
-                            return `${tooltipItem.label}: ${data} cases`;
-                        }
-                    }
+                legend: { 
+                    position: 'bottom',
+                    labels: { color: '#374151', font: { size: 14, family: 'Poppins' } }
+                },
+                tooltip: { 
+                    backgroundColor: '#1F2937',
+                    titleFont: { size: 14, family: 'Poppins' },
+                    bodyFont: { size: 12, family: 'Poppins' }
                 }
             }
         }
@@ -81,377 +96,208 @@ function initializeCharts() {
     lineChart = new Chart(lineCtx, {
         type: 'line',
         data: {
-            labels: ['2019', '2020', '2021', '2022', '2023'],
+            labels: data.chartData.labels,
             datasets: [{
-                label: 'Cases by Year',
-                data: [3500, 3700, 4200, 4300, 4500],
-                borderColor: 'rgba(75, 192, 192, 1)',
-                fill: false,
+                label: 'Total Cases Over Time',
+                data: data.chartData.totalCases,
+                borderColor: '#4F46E5',
+                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#4F46E5',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             scales: {
-                y: {
-                    beginAtZero: true
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: '#E5E7EB' },
+                    ticks: { color: '#374151', font: { size: 12, family: 'Poppins' } }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { color: '#374151', font: { size: 12, family: 'Poppins' } }
+                }
+            },
+            plugins: {
+                legend: { 
+                    position: 'top',
+                    labels: { color: '#374151', font: { size: 14, family: 'Poppins' } }
+                },
+                tooltip: { 
+                    backgroundColor: '#1F2937',
+                    titleFont: { size: 14, family: 'Poppins' },
+                    bodyFont: { size: 12, family: 'Poppins' }
+                }
+            }
+        }
+    });
+
+    doughnutChart = new Chart(doughnutCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+            datasets: [{
+                data: [data.metrics.highPriority, data.metrics.mediumPriority, data.metrics.lowPriority],
+                backgroundColor: ['#EF4444', '#FBBF24', '#3498DB'],
+                borderColor: ['#d63c3c', '#e6ac20', '#2e88c8'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%', // Makes it a thinner doughnut
+            plugins: {
+                legend: { 
+                    position: 'bottom',
+                    labels: { color: '#374151', font: { size: 14, family: 'Poppins' } }
+                },
+                tooltip: { 
+                    backgroundColor: '#1F2937',
+                    titleFont: { size: 14, family: 'Poppins' },
+                    bodyFont: { size: 12, family: 'Poppins' }
                 }
             }
         }
     });
 }
 
-// Function to update chart data based on time range
-function updateChartData(timeRange) {
-    let labels, totalCases, solvedCases, pendingCases;
-
-    switch (timeRange) {
-        case 'daily':
-            labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            totalCases = [50, 60, 70, 80, 90, 100, 110];
-            solvedCases = [30, 40, 50, 60, 70, 80, 90];
-            pendingCases = [20, 20, 20, 20, 20, 20, 20];
-            break;
-        case 'weekly':
-            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-            totalCases = [300, 400, 500, 600];
-            solvedCases = [200, 300, 400, 500];
-            pendingCases = [100, 100, 100, 100];
-            break;
-        case 'monthly':
-            labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-            totalCases = [400, 500, 600, 700, 800, 900, 1000];
-            solvedCases = [250, 350, 450, 550, 650, 750, 850];
-            pendingCases = [150, 150, 150, 150, 150, 150, 150];
-            break;
-        case 'yearly':
-            labels = ['2019', '2020', '2021', '2022', '2023'];
-            totalCases = [3500, 3700, 4200, 4300, 4500];
-            solvedCases = [3000, 3200, 3800, 4000, 4200];
-            pendingCases = [500, 500, 400, 300, 300];
-            break;
-    }
-
-    barChart.data.labels = labels;
-    barChart.data.datasets[0].data = totalCases;
-    barChart.data.datasets[1].data = solvedCases;
-    barChart.data.datasets[2].data = pendingCases;
+function updateDashboard(data, append = false) {
+    barChart.data.labels = data.chartData.labels;
+    barChart.data.datasets[0].data = data.chartData.totalCases;
+    barChart.data.datasets[1].data = data.chartData.solvedCases;
+    barChart.data.datasets[2].data = data.chartData.pendingCases;
     barChart.update();
 
-    lineChart.data.labels = labels;
-    lineChart.data.datasets[0].data = totalCases;
+    pieChart.data.labels = [
+        `Solved: ${data.pieChartData.solvedCases} (${((data.pieChartData.solvedCases / (data.pieChartData.solvedCases + data.pieChartData.pendingCases)) * 100).toFixed(1)}%)`,
+        `Pending: ${data.pieChartData.pendingCases} (${((data.pieChartData.pendingCases / (data.pieChartData.solvedCases + data.pieChartData.pendingCases)) * 100).toFixed(1)}%)`
+    ];
+    pieChart.data.datasets[0].data = [data.pieChartData.solvedCases, data.pieChartData.pendingCases];
+    pieChart.update();
+
+    lineChart.data.labels = data.chartData.labels;
+    lineChart.data.datasets[0].data = data.chartData.totalCases;
     lineChart.update();
 
-    document.getElementById('casesByYear').textContent = totalCases[totalCases.length - 1];
+    doughnutChart.data.datasets[0].data = [data.metrics.highPriority, data.metrics.mediumPriority, data.metrics.lowPriority];
+    doughnutChart.update();
 
-    // Update metrics overview
-    updateMetricsOverview(totalCases, solvedCases, pendingCases);
-}
+    document.getElementById('totalCasesMetric').textContent = data.metrics.totalCases;
+    document.getElementById('solvedCasesMetric').textContent = data.metrics.solvedCases;
+    document.getElementById('pendingCasesMetric').textContent = data.metrics.pendingCases;
+    document.getElementById('highPriorityMetric').textContent = data.metrics.highPriority;
+    document.getElementById('mediumPriorityMetric').textContent = data.metrics.mediumPriority;
+    document.getElementById('lowPriorityMetric').textContent = data.metrics.lowPriority;
 
-// Function to update metrics overview
-function updateMetricsOverview(totalCases, solvedCases, pendingCases) {
-    const latestTotal = totalCases[totalCases.length - 1];
-    const latestSolved = solvedCases[solvedCases.length - 1];
-    const latestPending = pendingCases[pendingCases.length - 1];
+    document.getElementById('totalCases').textContent = data.metrics.totalCases;
+    document.getElementById('solvedCases').textContent = data.metrics.solvedCases;
+    document.getElementById('pendingCases').textContent = data.metrics.pendingCases;
+    document.getElementById('highPriority').textContent = data.metrics.highPriority;
+    document.getElementById('mediumPriority').textContent = data.metrics.mediumPriority;
+    document.getElementById('lowPriority').textContent = data.metrics.lowPriority;
 
-    document.getElementById('totalCasesMetric').textContent = latestTotal;
-    document.getElementById('solvedCasesMetric').textContent = latestSolved;
-    document.getElementById('pendingCasesMetric').textContent = latestPending;
-
-    // Update right sidebar metrics
-    document.getElementById('totalCases').textContent = latestTotal;
-    document.getElementById('solvedCases').textContent = latestSolved;
-    document.getElementById('pendingCases').textContent = latestPending;
-
-    // Calculate priorities (example calculation, adjust as needed)
-    const highPriority = Math.round(latestTotal * 0.2);
-    const mediumPriority = Math.round(latestTotal * 0.5);
-    const lowPriority = latestTotal - highPriority - mediumPriority;
-
-    document.getElementById('highPriorityMetric').textContent = highPriority;
-    document.getElementById('mediumPriorityMetric').textContent = mediumPriority;
-    document.getElementById('lowPriorityMetric').textContent = lowPriority;
-
-    // Update right sidebar priorities
-    document.getElementById('highPriority').textContent = highPriority;
-    document.getElementById('mediumPriority').textContent = mediumPriority;
-    document.getElementById('lowPriority').textContent = lowPriority;
-}
-
-// Function to populate case table
-function populateCaseTable() {
     const caseTableBody = document.querySelector('#caseTable tbody');
-    const cases = [
-        { id: 12345, priority: 'High', status: 'Open', date: '2023-09-15' },
-        { id: 67890, priority: 'Medium', status: 'Solved', date: '2023-09-14' },
-        { id: 24680, priority: 'Low', status: 'Pending', date: '2023-09-13' },
-        { id: 13579, priority: 'High', status: 'Open', date: '2023-09-12' },
-        { id: 97531, priority: 'Medium', status: 'Solved', date: '2023-09-11' }
-    ];
-
-    caseTableBody.innerHTML = '';
-    cases.forEach(caseItem => {
+    if (!append) caseTableBody.innerHTML = '';
+    data.recentCases.forEach(caseItem => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${caseItem.id}</td>
-            <td>${caseItem.priority}</td>
+            <td>${caseItem.complaint_id}</td>
+            <td>${caseItem.severity}</td>
             <td>${caseItem.status}</td>
-            <td>${caseItem.date}</td>
-            <td><button class="view-case-btn" data-id="${caseItem.id}">View</button></td>
+            <td>${new Date(caseItem.timestamp).toLocaleDateString()}</td>
+            <td><button class="view-case-btn" data-id="${caseItem.complaint_id}">View</button></td>
         `;
         caseTableBody.appendChild(row);
     });
 }
 
-// Event listener for time range select
-document.getElementById('timeRangeSelect').addEventListener('change', function(event) {
-    updateChartData(event.target.value);
+async function loadMoreCases() {
+    const timeRange = document.getElementById('timeRangeSelect').value;
+    const location = document.getElementById('searchInput').value;
+    const status = document.getElementById('statusFilter').value;
+    const severity = document.getElementById('severityFilter').value;
+    currentPage++;
+    const data = await fetchDashboardData(timeRange, location, status, severity, currentPage);
+    if (data.recentCases.length > 0) {
+        updateDashboard(data, true);
+    } else {
+        alert('No more cases to load.');
+        currentPage--;
+    }
+}
+
+document.getElementById('timeRangeSelect').addEventListener('change', async () => {
+    currentPage = 1;
+    const data = await fetchDashboardData(
+        document.getElementById('timeRangeSelect').value,
+        document.getElementById('searchInput').value,
+        document.getElementById('statusFilter').value,
+        document.getElementById('severityFilter').value
+    );
+    updateDashboard(data);
 });
 
-// Event listener for search button
-document.getElementById('searchButton').addEventListener('click', function() {
-    const searchTerm = document.getElementById('searchInput').value;
-    alert(`Searching for: ${searchTerm}`);
-    // Implement actual search functionality here
+document.getElementById('searchButton').addEventListener('click', async () => {
+    currentPage = 1;
+    const data = await fetchDashboardData(
+        document.getElementById('timeRangeSelect').value,
+        document.getElementById('searchInput').value,
+        document.getElementById('statusFilter').value,
+        document.getElementById('severityFilter').value
+    );
+    updateDashboard(data);
 });
 
-// Event listener for load more cases button
-document.getElementById('loadMoreCases').addEventListener('click', function() {
-    alert('Loading more cases...');
-    // Implement functionality to load more cases here
+document.getElementById('statusFilter').addEventListener('change', async () => {
+    currentPage = 1;
+    const data = await fetchDashboardData(
+        document.getElementById('timeRangeSelect').value,
+        document.getElementById('searchInput').value,
+        document.getElementById('statusFilter').value,
+        document.getElementById('severityFilter').value
+    );
+    updateDashboard(data);
 });
 
-// Event delegation for view case buttons
-document.getElementById('caseTable').addEventListener('click', function(event) {
+document.getElementById('severityFilter').addEventListener('change', async () => {
+    currentPage = 1;
+    const data = await fetchDashboardData(
+        document.getElementById('timeRangeSelect').value,
+        document.getElementById('searchInput').value,
+        document.getElementById('statusFilter').value,
+        document.getElementById('severityFilter').value
+    );
+    updateDashboard(data);
+});
+
+document.getElementById('exportExcelButton').addEventListener('click', () => {
+    const timeRange = document.getElementById('timeRangeSelect').value;
+    const location = document.getElementById('searchInput').value;
+    const status = document.getElementById('statusFilter').value;
+    const severity = document.getElementById('severityFilter').value;
+    const url = `/export_to_excel/?timeRange=${timeRange}&location=${location}&status=${status}&severity=${severity}`;
+    window.location.href = url;
+});
+
+document.getElementById('loadMoreCases').addEventListener('click', loadMoreCases);
+
+document.getElementById('caseTable').addEventListener('click', (event) => {
     if (event.target.classList.contains('view-case-btn')) {
         const caseId = event.target.getAttribute('data-id');
         alert(`Viewing case: ${caseId}`);
-        // Implement functionality to view case details here
     }
 });
 
-// Initialize the dashboard
-function initializeDashboard() {
-    initializeCharts();
-    updateChartData('monthly'); // Default to monthly view
-    populateCaseTable();
+async function initializeDashboard() {
+    const initialData = await fetchDashboardData('monthly', '', '', '', 1);
+    initializeCharts(initialData);
+    updateDashboard(initialData);
 }
 
-// Call initializeDashboard when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initializeDashboard);
-
-// Function to initialize charts
-function initializeCharts() {
-    barChart = new Chart(barCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-            datasets: [{
-                label: 'Total Cases',
-                data: [400, 500, 600, 700, 800, 900, 1000],
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }, {
-                label: 'Solved Cases',
-                data: [250, 350, 450, 550, 650, 750, 850],
-                backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }, {
-                label: 'Pending Cases',
-                data: [150, 150, 150, 150, 150, 150, 150],
-                backgroundColor: 'rgba(255, 206, 86, 0.6)',
-                borderColor: 'rgba(255, 206, 86, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-
-    const solvedCases = 850;
-    const pendingCases = 150;
-
-    pieChart = new Chart(pieCtx, {
-        type: 'pie',
-        data: {
-            labels: [
-                `Solved Cases: ${solvedCases} (${((solvedCases / (solvedCases + pendingCases)) * 100).toFixed(1)}%)`,
-                `Pending Cases: ${pendingCases} (${((pendingCases / (solvedCases + pendingCases)) * 100).toFixed(1)}%)`
-            ],
-            datasets: [{
-                data: [solvedCases, pendingCases],
-                backgroundColor: ['#4BC0C0', '#FFCE56'],
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function (tooltipItem) {
-                            const data = tooltipItem.dataset.data[tooltipItem.dataIndex];
-                            return `${tooltipItem.label}: ${data} cases`;
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    lineChart = new Chart(lineCtx, {
-        type: 'line',
-        data: {
-            labels: ['2019', '2020', '2021', '2022', '2023'],
-            datasets: [{
-                label: 'Cases by Year',
-                data: [3500, 3700, 4200, 4300, 4500],
-                borderColor: 'rgba(75, 192, 192, 1)',
-                fill: false,
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
-
-// Function to update chart data based on time range
-function updateChartData(timeRange) {
-    let labels, totalCases, solvedCases, pendingCases;
-
-    switch (timeRange) {
-        case 'daily':
-            labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-            totalCases = [50, 60, 70, 80, 90, 100, 110];
-            solvedCases = [30, 40, 50, 60, 70, 80, 90];
-            pendingCases = [20, 20, 20, 20, 20, 20, 20];
-            break;
-        case 'weekly':
-            labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-            totalCases = [300, 400, 500, 600];
-            solvedCases = [200, 300, 400, 500];
-            pendingCases = [100, 100, 100, 100];
-            break;
-        case 'monthly':
-            labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-            totalCases = [400, 500, 600, 700, 800, 900, 1000];
-            solvedCases = [250, 350, 450, 550, 650, 750, 850];
-            pendingCases = [150, 150, 150, 150, 150, 150, 150];
-            break;
-        case 'yearly':
-            labels = ['2019', '2020', '2021', '2022', '2023'];
-            totalCases = [3500, 3700, 4200, 4300, 4500];
-            solvedCases = [3000, 3200, 3800, 4000, 4200];
-            pendingCases = [500, 500, 400, 300, 300];
-            break;
-    }
-
-    barChart.data.labels = labels;
-    barChart.data.datasets[0].data = totalCases;
-    barChart.data.datasets[1].data = solvedCases;
-    barChart.data.datasets[2].data = pendingCases;
-    barChart.update();
-
-    lineChart.data.labels = labels;
-    lineChart.data.datasets[0].data = totalCases;
-    lineChart.update();
-
-    document.getElementById('casesByYear').textContent = totalCases[totalCases.length - 1];
-
-    // Update metrics overview
-    updateMetricsOverview(totalCases, solvedCases, pendingCases);
-}
-
-// Function to update metrics overview
-function updateMetricsOverview(totalCases, solvedCases, pendingCases) {
-    const latestTotal = totalCases[totalCases.length - 1];
-    const latestSolved = solvedCases[solvedCases.length - 1];
-    const latestPending = pendingCases[pendingCases.length - 1];
-
-    document.getElementById('totalCasesMetric').textContent = latestTotal;
-    document.getElementById('solvedCasesMetric').textContent = latestSolved;
-    document.getElementById('pendingCasesMetric').textContent = latestPending;
-
-    // Update right sidebar metrics
-    document.getElementById('totalCases').textContent = latestTotal;
-    document.getElementById('solvedCases').textContent = latestSolved;
-    document.getElementById('pendingCases').textContent = latestPending;
-
-    // Calculate priorities (example calculation, adjust as needed)
-    const highPriority = Math.round(latestTotal * 0.2);
-    const mediumPriority = Math.round(latestTotal * 0.5);
-    const lowPriority = latestTotal - highPriority - mediumPriority;
-
-    document.getElementById('highPriorityMetric').textContent = highPriority;
-    document.getElementById('mediumPriorityMetric').textContent = mediumPriority;
-    document.getElementById('lowPriorityMetric').textContent = lowPriority;
-
-    // Update right sidebar priorities
-    document.getElementById('highPriority').textContent = highPriority;
-    document.getElementById('mediumPriority').textContent = mediumPriority;
-    document.getElementById('lowPriority').textContent = lowPriority;
-}
-
-// Function to populate case table
-function populateCaseTable() {
-    const caseTableBody = document.querySelector('#caseTable tbody');
-    const cases = [
-        { id: 12345, priority: 'High', status: 'Open', date: '2023-09-15' },
-        { id: 67890, priority: 'Medium', status: 'Solved', date: '2023-09-14' },
-        { id: 24680, priority: 'Low', status: 'Pending', date: '2023-09-13' },
-        { id: 13579, priority: 'High', status: 'Open', date: '2023-09-12' },
-        { id: 97531, priority: 'Medium', status: 'Solved', date: '2023-09-11' }
-    ];
-
-    caseTableBody.innerHTML = '';
-    cases.forEach(caseItem => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${caseItem.id}</td>
-            <td>${caseItem.priority}</td>
-            <td>${caseItem.status}</td>
-            <td>${caseItem.date}</td>
-            <td><button class="view-case-btn" data-id="${caseItem.id}">View</button></td>
-        `;
-        caseTableBody.appendChild(row);
-    });
-}
-
-// Event listener for time range select
-document.getElementById('timeRangeSelect').addEventListener('change', function(event) {
-    updateChartData(event.target.value);
-});
-
-// Event listener for search button
-document.getElementById('searchButton').addEventListener('click', function() {
-    const searchTerm = document.getElementById('searchInput').value;
-    alert(`Searching for: ${searchTerm}`);
-    // Implement actual search functionality here
-});
-
-// Event listener for load more cases button
-document.getElementById('loadMoreCases').addEventListener('click', function() {
-    alert('Loading more cases...');
-    // Implement functionality to load more cases here
-});
-
-// Event delegation for view case buttons
-document.getElementById('caseTable').addEventListener('click', function(event) {
-    if (event.target.classList.contains('view-case-btn')) {
-        const caseId = event.target.getAttribute('data-id');
-        alert(`Viewing case: ${caseId}`);
-        // Implement functionality to view case details here
-    }
-});

@@ -73,11 +73,12 @@ class Complaint(models.Model):
     ]
     severity = models.CharField(max_length=10, choices=severity_choices)
     description = models.TextField()
-    location = models.CharField(max_length=100, default='Mehsana')
+    location = models.CharField(max_length=255, default='Mehsana')
     coordinates = models.CharField(max_length=100)  # For storing latitude, longitude
     image = models.ImageField(upload_to='reports/images/')  # Path for uploaded images
     timestamp = models.DateTimeField(auto_now_add=True)
     email = models.EmailField()
+    counter = models.PositiveIntegerField(default=0)
 
     issue_status_choices = [
         ('pending', 'Pending'),
@@ -87,6 +88,8 @@ class Complaint(models.Model):
     status = models.CharField(max_length=50, choices=issue_status_choices, default='pending')
     resolved_on = models.TextField()  # New field for resolution date
     comment = models.TextField(blank=True)
+    class Meta:
+        unique_together = ('coordinates', 'issue_type')
 
     def save(self, *args, **kwargs):
         # Check if status has changed to "resolved"
@@ -106,7 +109,14 @@ class Complaint(models.Model):
     def __str__(self):
         return f"Report #{self.complaint_id} - {self.issue_type} - {self.severity}"
 
+class ComplaintReport(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    # Change to reference complaint_id instead of id
+    complaint = models.ForeignKey(Complaint, on_delete=models.CASCADE, to_field='complaint_id', db_column='complaint_id')
+    timestamp = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('user', 'complaint')
 
 User1 = get_user_model()
 class UserAttemptedLocation(models.Model):
