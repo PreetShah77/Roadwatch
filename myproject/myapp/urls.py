@@ -35,7 +35,9 @@ urlpatterns = [
     # path('delete_employee/<int:emp_id><str:email>/', views.delete_employee, name='delete_employee'),
     # path('delete_employee/<int:emp_id><str:email>/', views.delete_employee, name='delete_employee'),  # Show confirmation
     # path('confirm_delete_employee/<int:emp_id><str:email>/', views.confirm_delete_employee, name='confirm_delete_employee'),  # Perform deletion
-     path('delete_employee/<int:emp_id><str:email>/', views.delete_employee, name='delete_employee'),
+    path('delete_employee/<int:emp_id><str:email>/', views.delete_employee, name='delete_employee'),
+    path('employee-home/', views.employee_home, name='employee_home'),
+    path('view-tasks/', views.view_tasks, name='view_tasks'),
 
     path('complaints/', views.complaint_list, name='complaint_list'),
     path('complaints/<int:complaint_id>/update/', views.update_complaint_status, name='update_complaint_status'),
