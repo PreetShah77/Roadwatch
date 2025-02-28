@@ -254,150 +254,120 @@
     </style>
   </head>
   <body>
-    <header>
-        <nav>
-            <div class="logo">RoadWatch</div>
-            <!-- <div class="nav-links">
-              <a href="{% url 'admin_home' %}">Home</a>
-              <a href="{% url 'employee_list' %}">Employee list</a>
-              <a href="{% url 'assign_task' %}">Assign Task</a>
-              <a href="{% url 'add_employee' %}">Add Employee</a>
-              <a href="#">Manage Complaint</a>
-              <a href="{% url 'admin_report' %}">Report</a>
-              <a href="{% url 'admin_map' %}">Map</a>
-            </div> -->
-            <div class="nav-links user-dropdown">
-              <a href="#" class="user-icon-link">
-                <span class="user-name">Hello, {{ user.first_name|default:"User"}}</span>
-                <div class="user-icon-circle">
-                  <i class="fas fa-user"></i>
-                </div>
-                <i class="fas fa-chevron-down arrow-icon"></i>
-              </a>
-              <div class="dropdown-content">
-                <a href="{% url 'admin_profile_settings' %}">Profile Settings</a>
-                <a href="{% url 'logout' %}">Logout</a>
+      <header>
+          <nav>
+              <div class="logo">RoadWatch</div>
+              <div class="nav-links">
+                  {% if employee.role == 'admin' %}
+                      <a href="{% url 'admin_home' %}">Home</a>
+                      <a href="{% url 'employee_list' %}">Employee List</a>
+                      <a href="{% url 'assign_task' %}">Assign Task</a>
+                      <a href="{% url 'add_employee' %}">Add Employee</a>
+                      <a href="{% url 'complaint_list' %}">Manage Complaints</a>
+                      <a href="{% url 'admin_report' %}">Reports</a>
+                      <a href="{% url 'admin_map' %}">Map</a>
+                  {% endif %}
+                  {% if employee.role == 'supervisor' %}
+                      <a href="{% url 'complaint_list' %}">Manage Complaints</a>
+                      <a href="{% url 'admin_report' %}">Reports</a>
+                  {% endif %}
+                  <a href="{% url 'view_tasks' %}">My Tasks</a>
               </div>
-            </div>
+              <div class="user-dropdown">
+                  <a href="#" class="user-icon-link">
+                      <span class="user-name">Hello, {{ user.first_name|default:"User" }}</span>
+                      <div class="user-icon-circle">
+                          <i class="fas fa-user"></i>
+                      </div>
+                      <i class="fas fa-chevron-down arrow-icon"></i>
+                  </a>
+                  <div class="dropdown-content">
+                      <a href="{% url 'admin_profile_settings' %}">Profile Settings</a>
+                      <a href="{% url 'logout' %}">Logout</a>
+                  </div>
+              </div>
           </nav>
-        </header>
-
-        
-
-          <div class="main-content">
+      </header>
+  
+      <div class="main-content">
+          <h1>Welcome, {{ user.first_name }} ({{ employee.role|capfirst }})</h1>
           <div class="card-container">
-            {% if user.is_admin %}  <!-- Check if user is admin -->
-            
-              <!-- Admin View Cards -->
+              {% if employee.role == 'admin' %}
+                  <!-- Admin View Cards -->
+                  <div class="card">
+                      <i class="fas fa-users"></i>
+                      <h3>View Employees</h3>
+                      <p>View and manage the complete list of employees in your organization.</p>
+                      <a href="{% url 'employee_list' %}" class="card-button">View List</a>
+                  </div>
+                  <div class="card">
+                      <i class="fas fa-tasks"></i>
+                      <h3>Assign Tasks</h3>
+                      <p>Assign and manage tasks for your employees efficiently.</p>
+                      <a href="{% url 'assign_task' %}" class="card-button">Assign Tasks</a>
+                  </div>
+                  <div class="card">
+                      <i class="fas fa-user-plus"></i>
+                      <h3>Add Employee</h3>
+                      <p>Add new employees to your organization's database.</p>
+                      <a href="{% url 'add_employee' %}" class="card-button">Add New</a>
+                  </div>
+                  <div class="card">
+                      <i class="fas fa-clipboard-check"></i>
+                      <h3>Manage Complaints</h3>
+                      <p>Update and track the status of complaints.</p>
+                      <a href="{% url 'complaint_list' %}" class="card-button">Update Status</a>
+                  </div>
+                  <div class="card">
+                      <i class="fas fa-file-alt"></i>
+                      <h3>Generate Reports</h3>
+                      <p>Create and download detailed reports of complaints and resolutions.</p>
+                      <a href="{% url 'admin_report' %}" class="card-button">Generate Report</a>
+                  </div>
+                  <div class="card">
+                      <i class="fas fa-map-marked-alt"></i>
+                      <h3>View Map</h3>
+                      <p>View real-time locations of complaints and assigned employees.</p>
+                      <a href="{% url 'admin_map' %}" class="card-button">Open Map</a>
+                  </div>
+              {% elif employee.role == 'staff' %}
+                  <!-- Supervisor View Cards -->
+                  <div class="card">
+                      <i class="fas fa-clipboard-check"></i>
+                      <h3>Manage Complaints</h3>
+                      <p>Update and track the status of complaints.</p>
+                      <a href="{% url 'complaint_list' %}" class="card-button">Update Status</a>
+                  </div>
+                  <div class="card">
+                      <i class="fas fa-file-alt"></i>
+                      <h3>Generate Reports</h3>
+                      <p>Create and download detailed reports of complaints and resolutions.</p>
+                      <a href="{% url 'admin_report' %}" class="card-button">Generate Report</a>
+                  </div>
+                  {% elif employee.role == 'supervisor' %}
+                  <!-- Supervisor View Cards -->
+                  <div class="card">
+                      <i class="fas fa-clipboard-check"></i>
+                      <h3>Manage Complaints</h3>
+                      <p>Update and track the status of complaints.</p>
+                      <a href="{% url 'complaint_list' %}" class="card-button">Update Status</a>
+                  </div>
+                  <div class="card">
+                      <i class="fas fa-file-alt"></i>
+                      <h3>Generate Reports</h3>
+                      <p>Create and download detailed reports of complaints and resolutions.</p>
+                      <a href="{% url 'admin_report' %}" class="card-button">Generate Report</a>
+                  </div>
+
+              {% endif %}
+              <!-- All employees see this card -->
               <div class="card">
-                <i class="fas fa-users"></i>
-                <h3>View Employees</h3>
-                <p>View and manage the complete list of employees in your organization.</p>
-                <a href="{% url 'employee_list' %}" class="card-button">View List</a>
+                  <i class="fas fa-tasks"></i>
+                  <h3>View Assigned Tasks</h3>
+                  <p>View and track your assigned tasks ({{ tasks.count }} pending).</p>
+                  <a href="{% url 'view_tasks' %}" class="card-button">View Tasks</a>
               </div>
-    
-              <div class="card">
-                <i class="fas fa-tasks"></i>
-                <h3>Assign Tasks</h3>
-                <p>Assign and manage tasks for your employees efficiently.</p>
-                <a href="{% url 'assign_task' %}" class="card-button">Assign Tasks</a>
-              </div>
-    
-              <div class="card">
-                <i class="fas fa-user-plus"></i>
-                <h3>Add Employee</h3>
-                <p>Add new employees to your organization's database.</p>
-                <a href="{% url 'add_employee' %}" class="card-button">Add New</a>
-              </div>
-    
-              <div class="card">
-                <i class="fas fa-clipboard-check"></i>
-                <h3>Manage Complaints</h3>
-                <p>Update and track the status of complaints.</p>
-                <a href="{% url 'complaint_list'%}" class="card-button">Update Status</a>
-              </div>
-    
-              <div class="card">
-                <i class="fas fa-file-alt"></i>
-                <h3>Generate Reports</h3>
-                <p>Create and download detailed reports of complaints and resolutions.</p>
-                <a href="{% url 'admin_report' %}" class="card-button">Generate Report</a>
-              </div>
-    
-              <div class="card">
-                <i class="fas fa-map-marked-alt"></i>
-                <h3>View Map</h3>
-                <p>View real-time locations of complaints and assigned employees.</p>
-                <a href="{% url 'admin_map' %}" class="card-button">Open Map</a>
-              </div>
-    
-            {% else %}
-              <!-- Employee View Cards -->
-              <div class="card">
-                <i class="fas fa-tasks"></i>
-                <h3>View Assigned Tasks</h3>
-                <p>View and track your assigned tasks.</p>
-                <a href="#" class="card-button">View Tasks</a>
-              </div>
-    
-              <div class="card">
-                <i class="fas fa-clipboard-check"></i>
-                <h3>Manage Complaints</h3>
-                <p>Update and track the status of your complaints.</p>
-                <a href="#" class="card-button">Manage Complaints</a>
-              </div>
-    
-            {% endif %}
           </div>
-        </div>
-      </body>
-      
-          <script>
-            document.addEventListener('DOMContentLoaded', function() {
-              function updateComplaintStatus(complaintId, newStatus) {
-                fetch(`/update-complaint-status/${complaintId}`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                  },
-                  body: JSON.stringify({
-                    status: newStatus
-                  })
-                })
-                .then(response => response.json())
-                .then(data => {
-                  if (data.success) {
-                    updateStatusUI(complaintId, newStatus);
-                  }
-                })
-                .catch(error => console.error('Error:', error));
-              }
-      
-              function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                  const cookies = document.cookie.split(';');
-                  for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                      break;
-                    }
-                  }
-                }
-                return cookieValue;
-              }
-      
-              function updateStatusUI(complaintId, newStatus) {
-                const statusElement = document.querySelector(`#complaint-${complaintId} .status-badge`);
-                if (statusElement) {
-                  statusElement.classList.remove('status-pending', 'status-in-progress', 'status-resolved');
-                  statusElement.classList.add(`status-${newStatus.toLowerCase().replace(' ', '-')}`);
-                  statusElement.textContent = newStatus;
-                }
-              }
-            });
-          </script>
-        </body>
-      </html>
+      </div>
+  </body>
+  </html>
