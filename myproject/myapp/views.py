@@ -43,7 +43,46 @@ from django.utils import timezone
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
+@login_required
+def employee_home(request):
+    user = request.user
+    if not user:
+        return redirect('login')
 
+    try:
+        employee = Employee.objects.get(email=user.email)
+        print(f"Employee: {employee.email}, Role: {employee.role}")
+    except Employee.DoesNotExist:
+        messages.error(request, "You are not authorized as an employee.")
+        return redirect('login')
+
+    tasks = Task.objects.filter(assigned_employee=employee, is_completed=False)
+    context = {
+        'user': user,
+        'employee': employee,
+        'tasks': tasks,
+    }
+    return render(request, 'employee_home.html', context)
+
+@login_required
+def view_tasks(request):
+    user = request.user
+    if not user:
+        return redirect('login')
+
+    try:
+        employee = Employee.objects.get(email=user.email)
+    except Employee.DoesNotExist:
+        messages.error(request, "You are not authorized as an employee.")
+        return redirect('login')
+
+    # All employees can view their tasks
+    tasks = Task.objects.filter(assigned_employee=employee)
+    context = {
+        'tasks': tasks,
+        'employee': employee,
+    }
+    return render(request, 'view_tasks.html', context)
 
 # def raise_complaint(request):
 #     if request.method == 'POST':
@@ -574,63 +613,61 @@ def signup_view(request):
     return render(request, 'signup.html')
 
 def login_view(request):
-    error_message = None  # Initialize error message
-    email_value = ""  # Default empty email field
+    error_message = None
+    email_value = ""
 
-    # Check if the user is already authenticated
-    
     if request.user.is_authenticated:
-        email = request.user.email  # Get the logged-in user's email
+        email = request.user.email
         user = request.user
-        # Check if the email is in the CustomUser table
-        if CustomUser.objects.filter(email=email).exists() and user.is_government_official == 0 :
+        print(f"Authenticated user: {email}, is_admin: {user.is_admin}, is_government_official: {user.is_government_official}")
+        # Employee check first
+        if Employee.objects.filter(email=email).exists():
+            print(f"Redirecting {email} to employee_home")
             request.session['user_id'] = user.id
-            return redirect('user_home')  # Redirect to user_home if found in CustomUser
-
-        # Check if the email is in the Employee table
-        elif Employee.objects.filter(email=email).exists():
+            return redirect('employee_home')
+        # Admin check
+        elif user.is_admin:
+            print(f"Redirecting {email} to admin_home")
             request.session['user_id'] = user.id
-            return redirect('admin_home')  # Redirect to admin_home if in Employee
+            return redirect('admin_home')
+        # Regular user (not an employee or admin)
+        else:
+            print(f"Redirecting {email} to user_home")
+            request.session['user_id'] = user.id
+            return redirect('user_home')
 
-    # If the user is not authenticated, process the login form
     if request.method == 'POST':
         email = request.POST.get('email')
         password = request.POST.get('password')
         user = authenticate(request, email=email, password=password)
 
-
-        if request.method == 'POST':
-            email = request.POST.get('email')
-            password = request.POST.get('password')
-            user = authenticate(request, email=email, password=password)
-
-
-        # Check if user is valid
         if user is not None and user.is_authenticated:
             login(request, user)
-
-            # Now that user is authenticated, you can check the specific attributes
-            if user.is_admin == 1 or user.is_government_official == 1:
+            print(f"Logged in user: {email}, is_admin: {user.is_admin}, is_government_official: {user.is_government_official}")
+            # Employee check first
+            if Employee.objects.filter(email=email).exists():
+                print(f"Redirecting {email} to employee_home")
                 request.session['user_id'] = user.id
-                # Proceed with your logic for logged-in government official or admin
-                return redirect('admin_home')  # Example redirect
+                return redirect('employee_home')
+            # Admin check
+            elif user.is_admin:
+                print(f"Redirecting {email} to admin_home")
+                request.session['user_id'] = user.id
+                return redirect('admin_home')
+            # Regular user
             else:
+                print(f"Redirecting {email} to user_home")
                 request.session['user_id'] = user.id
-                return redirect('user_home')  # Redirect for regular users
-
+                return redirect('user_home')
         else:
             error_message = "Either email or password is incorrect"
-            email_value = email  # Retain the email field value
+            email_value = email
+            print(f"Login failed for {email}")
 
-    
-    # Render the login page with error message if login failed or not authenticated
     return render(request, 'login.html', {
         'error_message': error_message,
-        'email_value': email_value  # Pass email back to the template
+        'email_value': email_value
     })
-
-
-
 
 def logout_all_sessions(request):
     if request.user.is_authenticated:
@@ -1241,6 +1278,18 @@ def admin_report(request):
     user = request.user
     if not user:
         return redirect('login')
+
+    try:
+        employee = Employee.objects.get(email=user.email)
+    except Employee.DoesNotExist:
+        messages.error(request, "You are not authorized as an employee.")
+        return redirect('login')
+
+    # Only Admin and Supervisor can access reports
+    if employee.role not in ['admin', 'supervisor']:
+        messages.error(request, "You do not have permission to view reports.")
+        return redirect('employee_home')
+
     return render(request, 'admin-report-dashboard.html')
 
 @login_required
@@ -1467,9 +1516,21 @@ def update_complaint_status(request, complaint_id):
 
 @login_required
 def complaint_list(request):
-    user=request.user
+    user = request.user
     if not user:
         return redirect('login')
+
+    try:
+        employee = Employee.objects.get(email=user.email)
+    except Employee.DoesNotExist:
+        messages.error(request, "You are not authorized as an employee.")
+        return redirect('login')
+
+    # Only Admin and Supervisor can manage complaints
+    if employee.role not in ['admin', 'supervisor']:
+        messages.error(request, "You do not have permission to manage complaints.")
+        return redirect('employee_home')
+
     complaints = Complaint.objects.all()
     return render(request, 'complaint_list.html', {'complaints': complaints})
 
