@@ -13,161 +13,161 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <style>
-       :root {
-            --primary-color: #4F46E5;
-            --primary-hover: #4338CA;
-            --secondary-color: #1F2937;
-            --accent-color: #EF4444;
-            --background-color: #F9FAFB;
-            --text-color: #374151;
-            --success-color: #10B981;
-            --warning-color: #FBBF24;
-            --pending-color: #F97316;
-            --card-bg: white;
-            --input-bg: #F3F4F6;
-            --input-border: #E5E7EB;
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        }
+      :root {
+        --primary-color: #4F46E5;
+        --primary-hover: #4338CA;
+        --secondary-color: #1F2937;
+        --accent-color: #EF4444;
+        --background-color: #F9FAFB;
+        --text-color: #374151;
+        --success-color: #10B981;
+        --warning-color: #FBBF24;
+        --pending-color: #F97316;
+        --card-bg: white;
+        --input-bg: #F3F4F6;
+        --input-border: #E5E7EB;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--background-color);
-        }
+      body {
+        font-family: 'Inter', sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--background-color);
+      }
 
-        header {
-            background-color: white;
-            box-shadow: var(--shadow-sm);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
+      header {
+        background-color: white;
+        box-shadow: var(--shadow-sm);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+      }
 
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 1.5rem;
-            max-width: 1280px;
-            margin: 0 auto;
-        }
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        max-width: 1280px;
+        margin: 0 auto;
+      }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--primary-color);
-        }
+      .logo {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+      }
 
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-        }
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+      }
 
-        .nav-links a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            transition: color 0.2s ease;
-            padding: 0.5rem 0;
-            position: relative;
-        }
+      .nav-links a {
+        color: var(--secondary-color);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: color 0.2s ease;
+        padding: 0.5rem 0;
+        position: relative;
+      }
 
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: var(--primary-color);
-            transition: width 0.2s ease;
-        }
+      .nav-links a::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--primary-color);
+        transition: width 0.2s ease;
+      }
 
-        .nav-links a:hover::after {
-            width: 100%;
-        }
+      .nav-links a:hover::after {
+        width: 100%;
+      }
 
-        .user-dropdown {
-            position: relative;
-        }
+      .user-dropdown {
+        position: relative;
+      }
 
-        .user-icon-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.5rem 1rem;
-            background-color: var(--input-bg);
-            border-radius: 9999px;
-            transition: background-color 0.2s ease;
-            text-decoration: none;
-        }
+      .user-icon-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        background-color: var(--input-bg);
+        border-radius: 9999px;
+        transition: background-color 0.2s ease;
+        text-decoration: none;
+      }
 
-        .user-icon-link:hover {
-            background-color: var(--input-border);
-        }
+      .user-icon-link:hover {
+        background-color: var(--input-border);
+      }
 
-        .user-name {
-            font-weight: 500;
-            color: var(--secondary-color);
-        }
+      .user-name {
+        font-weight: 500;
+        color: var(--secondary-color);
+      }
 
-        .user-icon-circle {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+      .user-icon-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-        .user-icon-circle i {
-            color: white;
-        }
+      .user-icon-circle i {
+        color: white;
+      }
 
-        .dropdown-content {
-            position: absolute;
-            right: 0;
-            top: 120%;
-            background-color: white;
-            min-width: 200px;
-            border-radius: 0.5rem;
-            box-shadow: var(--shadow);
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s ease;
-        }
+      .dropdown-content {
+        position: absolute;
+        right: 0;
+        top: 120%;
+        background-color: white;
+        min-width: 200px;
+        border-radius: 0.5rem;
+        box-shadow: var(--shadow);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s ease;
+      }
 
-        .user-dropdown:hover .dropdown-content {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
+      .user-dropdown:hover .dropdown-content {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
 
-        .dropdown-content a {
-            padding: 0.75rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: var(--text-color);
-            text-decoration: none;
-            transition: background-color 0.2s ease;
-        }
+      .dropdown-content a {
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: background-color 0.2s ease;
+      }
 
-        .dropdown-content a:hover {
-            background-color: var(--input-bg);
-        }
+      .dropdown-content a:hover {
+        background-color: var(--input-bg);
+      }
 
       .main-content {
         margin-top: 80px;
@@ -244,14 +244,14 @@
       }
 
       .button-group {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      margin-top: 2rem;
-      margin-bottom: 1rem;
-    }
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+      }
 
-    button {
+      button {
         background-color: var(--success-color);
         color: white;
         padding: 0.8rem 2rem;
@@ -263,74 +263,159 @@
         transition: background-color 0.3s ease;
         font-family: "Poppins", sans-serif;
         font-weight: 600;
-        /* Center alignment properties */
         display: block;
         margin: 0 auto;
-    }  
-    button:hover{
+      }  
+      button:hover {
         background-color: #27ae60;
-    }
-
-    @media (max-width: 768px) {
-      .main-content {
-        padding: 1rem;
       }
 
-      .form-container {
-        padding: 1.5rem;
+      @media (max-width: 768px) {
+        .main-content {
+          padding: 1rem;
+        }
+
+        .form-container {
+          padding: 1.5rem;
+        }
+
+        .button-group {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .btn {
+          width: 100%;
+          min-width: unset;
+        }
+      }
+      .back-to-profile {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        display: block;
+        margin-top: 1rem;
+        text-align: center;
       }
 
-      .button-group {
-        flex-direction: column;
+      /* Additional styles for hamburger menu */
+      .nav-left {
+        display: flex;
+        align-items: center;
         gap: 1rem;
       }
 
-      .btn {
-        width: 100%;
-        min-width: unset;
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
       }
-    }
-    .back-to-profile {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-            display: block;
-            margin-top: 1rem;
-            text-align: center;
+
+      .hamburger {
+        display: none;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--secondary-color);
+        cursor: pointer;
+        margin-right: 1rem;
+      }
+
+      @media (max-width: 768px) {
+        .nav-left {
+          flex: 1;
         }
+
+        .hamburger {
+          display: block;
+        }
+
+        .nav-menu {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          width: 100%;
+          background-color: white;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-menu.active {
+          display: block;
+        }
+
+        .nav-links {
+          flex-direction: column;
+          width: 100%;
+          padding: 1rem 0;
+        }
+
+        .nav-links a {
+          padding: 0.5rem 1rem;
+          width: 100%;
+          text-align: center;
+        }
+
+        .nav-menu .user-dropdown {
+          display: none;
+        }
+
+        .user-name {
+          display: none;
+        }
+
+        .user-icon-link {
+          padding: 0.5rem;
+        }
+      }
     </style>
   </head>
   <body>
-        <header>
-          <nav>
-            <div class="logo">RoadWatch</div>
-            <div class="nav-links">
-              <a href="{% url 'admin_home' %}">Home</a>
-                <a href="{% url 'assign_task' %}">Assign Task</a>
-                <a href="{% url 'complaint_list'%}">Manage Complaint</a>
-                <a href="{% url 'admin_report' %}">Report</a>
-                <a href="{% url 'admin_map' %}">Map</a>
-            </div>
-            <div class="user-dropdown">
-              <div class="user-icon-link">
-                <span class="user-name">Hello, {{ user.first_name|default:"User" }}</span>
-                <div class="user-icon-circle">
-                  <i class="fas fa-user"></i>
-                </div>
+    <header>
+      <nav>
+        <!-- Left section with logo -->
+        <div class="nav-left">
+          <div class="logo">RoadWatch</div>
+        </div>
+    
+        <!-- Center section with navigation links -->
+        <div class="nav-menu">
+          <div class="nav-links">
+            <a href="{% url 'admin_home' %}">Home</a>
+            <a href="{% url 'assign_task' %}">Assign Task</a>
+            <a href="{% url 'complaint_list'%}">Manage Complaint</a>
+            <a href="{% url 'admin_report' %}">Report</a>
+            <a href="{% url 'admin_map' %}">Map</a>
+          </div>
+        </div>
+    
+        <!-- Right section with hamburger and user profile -->
+        <div class="nav-right">
+          <button class="hamburger" aria-label="Toggle navigation">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="user-dropdown">
+            <a href="#" class="user-icon-link">
+              <span class="user-name">Hello, {{ user.first_name|default:"User" }}</span>
+              <div class="user-icon-circle">
+                <i class="fas fa-user"></i>
               </div>
-              <div class="dropdown-content">
-                <a href="{% url 'admin_profile_settings' %}">
-                  <i class="fas fa-user-cog"></i>
-                  Profile Settings
-                </a>
-                <a href="{% url 'logout' %}">
-                  <i class="fas fa-sign-out-alt"></i>
-                  Logout
-                </a>
-              </div>
+              <i class="fas fa-chevron-down arrow-icon"></i>
+            </a>
+            <div class="dropdown-content">
+              <a href="{% url 'admin_profile_settings' %}">
+                <i class="fas fa-user-cog"></i>
+                Profile Settings
+              </a>
+              <a href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </a>
             </div>
-          </nav>
-        </header>
+          </div>
+        </div>
+      </nav>
+    </header>
 
     <div class="main-content">
       <div class="form-container">
@@ -349,12 +434,41 @@
           {{ form.as_p }}
           <div class="container">
             <div class="center">
-                <button type="submit" class="btn"><i class="fas fa-add"></i> Add New Employee</button>
-                <a href="{% url 'employee_list' %}" id="back-to-profile" class="back-to-profile">View Employee List</a>
+              <button type="submit" class="btn"><i class="fas fa-add"></i> Add New Employee</button>
+              <a href="{% url 'employee_list' %}" id="back-to-profile" class="back-to-profile">View Employee List</a>
             </div>
-        </div>
+          </div>
         </form>
       </div>
     </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const hamburger = document.querySelector(".hamburger");
+        const navMenu = document.querySelector(".nav-menu");
+        const userIconLink = document.querySelector(".user-icon-link");
+        const dropdownContent = document.querySelector(".dropdown-content");
+
+        hamburger.addEventListener("click", function () {
+          navMenu.classList.toggle("active");
+        });
+
+        // Toggle user dropdown on click
+        userIconLink.addEventListener("click", function (e) {
+          e.preventDefault();
+          dropdownContent.classList.toggle("show");
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", function (e) {
+          if (
+            !userIconLink.contains(e.target) &&
+            !dropdownContent.contains(e.target)
+          ) {
+            dropdownContent.classList.remove("show");
+          }
+        });
+      });
+    </script>
   </body>
 </html>

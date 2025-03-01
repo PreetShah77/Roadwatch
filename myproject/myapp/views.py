@@ -62,6 +62,8 @@ def employee_home(request):
         'employee': employee,
         'tasks': tasks,
     }
+    if employee.role == 'admin':
+        return redirect('admin_home')
     return render(request, 'employee_home.html', context)
 
 @login_required
