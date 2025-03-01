@@ -53,6 +53,7 @@ urlpatterns = [
     path('admin_report/', views.admin_report, name='admin_report'),
     path('export_to_excel/', views.export_to_excel, name='export_to_excel'),
 
+    
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
