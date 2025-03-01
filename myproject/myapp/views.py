@@ -1286,7 +1286,7 @@ def admin_report(request):
         return redirect('login')
 
     # Only Admin and Supervisor can access reports
-    if employee.role not in ['admin', 'supervisor']:
+    if employee.role not in ['admin', 'supervisor','staff']:
         messages.error(request, "You do not have permission to view reports.")
         return redirect('employee_home')
 
@@ -1527,7 +1527,7 @@ def complaint_list(request):
         return redirect('login')
 
     # Only Admin and Supervisor can manage complaints
-    if employee.role not in ['admin', 'supervisor']:
+    if employee.role not in ['admin', 'supervisor','staff']:
         messages.error(request, "You do not have permission to manage complaints.")
         return redirect('employee_home')
 
@@ -1572,15 +1572,62 @@ def complaint_list(request):
 #     return render(request, 'generate_report.html', {'complaints': complaints})
 
 
-
 @login_required
 def generate_report(request):
-    complaints = Complaint.objects.all()
+    user = request.user
+    if not user:
+        return redirect('login')
+
+    try:
+        employee = Employee.objects.get(email=user.email)
+    except Employee.DoesNotExist:
+        messages.error(request, "You are not authorized as an employee.")
+        return redirect('login')
+
+    # Allow admin, supervisor, and staff
+    if employee.role not in ['admin', 'supervisor', 'staff']:
+        messages.error(request, "You do not have permission to view reports.")
+        return redirect('employee_home')
+
+    # Get filter parameters
+    time_range = request.GET.get('timeRange', 'monthly')
+    location_search = request.GET.get('location', '').lower()
+    status_filter = request.GET.get('status', '')
+    severity_filter = request.GET.get('severity', '')
+
+    # Define time range
+    now = timezone.now()
+    if time_range == 'daily':
+        start_date = now - timedelta(days=7)
+    elif time_range == 'weekly':
+        start_date = now - timedelta(weeks=4)
+    elif time_range == 'yearly':
+        start_date = now - timedelta(days=365)
+    else:  # monthly
+        start_date = now - timedelta(days=30)
+
+    # Base queryset
+    complaints = Complaint.objects.filter(timestamp__gte=start_date)
+
+    # Apply filters
+    if location_search:
+        complaints = complaints.filter(location__icontains=location_search)
+    if status_filter:
+        complaints = complaints.filter(status=status_filter)
+    if severity_filter:
+        complaints = complaints.filter(severity=severity_filter)
+
     context = {
         'complaints': complaints,
         'total_complaints': complaints.count(),
-        'pending_complaints': complaints.filter(status='Pending').count(),
-        'in_progress_complaints': complaints.filter(status='In Progress').count(),
-        'resolved_complaints': complaints.filter(status='Resolved').count(),
+        'pending_complaints': complaints.filter(status='pending').count(),
+        'in_progress_complaints': complaints.filter(status='in-progress').count(),
+        'resolved_complaints': complaints.filter(status='resolved').count(),
+        'time_range': time_range,
+        'location_search': location_search,
+        'status_filter': status_filter,
+        'severity_filter': severity_filter,
+        'user': user,
+        'employee': employee,
     }
-    return render(request, 'admin-report.html', context)
+    return render(request, 'generate_report.html', context)
